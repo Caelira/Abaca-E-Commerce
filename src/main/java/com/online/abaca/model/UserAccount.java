@@ -12,7 +12,7 @@ public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "iduser")
-    private Integer idUser;
+    private Long idUser;
 
     @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
@@ -27,11 +27,11 @@ public class UserAccount {
     private LocalDateTime createdAt;
 
 
-    public Integer getIdUser() {
+    public Long getIdUser() {
         return idUser;
     }
 
-    public void setIdUser(Integer idUser) {
+    public void setIdUser(Long idUser) {
         this.idUser = idUser;
     }
 

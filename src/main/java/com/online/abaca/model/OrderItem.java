@@ -12,7 +12,7 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idorder_item")
-    private Integer idOrderItem;
+    private Long idOrderItem;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idorder", nullable = false)
@@ -28,11 +28,11 @@ public class OrderItem {
     @Column(name = "final_unit_price", precision = 10, scale = 2, nullable = false)
     private BigDecimal finalUnitPrice;
 
-    public Integer getIdOrderItem() {
+    public Long getIdOrderItem() {
         return idOrderItem;
     }
 
-    public void setIdOrderItem(Integer idOrderItem) {
+    public void setIdOrderItem(Long idOrderItem) {
         this.idOrderItem = idOrderItem;
     }
 

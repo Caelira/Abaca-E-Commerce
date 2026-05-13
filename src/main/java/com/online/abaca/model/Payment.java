@@ -12,7 +12,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idpayment")
-    private Integer idPayment;
+    private Long idPayment;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idorder", nullable = false)
@@ -30,11 +30,11 @@ public class Payment {
     @Column(name = "payment_date", nullable = false)
     private LocalDateTime paymentDate;
 
-    public Integer getIdPayment() {
+    public Long getIdPayment() {
         return idPayment;
     }
 
-    public void setIdPayment(Integer idPayment) {
+    public void setIdPayment(Long idPayment) {
         this.idPayment = idPayment;
     }
 

@@ -7,7 +7,7 @@ public class Seller {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idseller")
-    private Integer idSeller;
+    private Long idSeller;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iduser", nullable = false, unique = true)
@@ -19,11 +19,11 @@ public class Seller {
     @Column(name = "store_name", length = 100, nullable = false)
     private String storeName;
 
-    public Integer getIdSeller() {
+    public Long getIdSeller() {
         return idSeller;
     }
 
-    public void setIdSeller(Integer idSeller) {
+    public void setIdSeller(Long idSeller) {
         this.idSeller = idSeller;
     }
 
