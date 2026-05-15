@@ -17,10 +17,14 @@ public interface ProductMapper {
     @Mapping(target = "idProduct", ignore = true)
     @Mapping(target = "seller", ignore = true)
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "totalSold", ignore = true)
     Product toEntity(ProductRequestDTO requestDTO);
 
     @Mapping(target = "idProduct", ignore = true)
     @Mapping(target = "seller", ignore = true)
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "totalSold", ignore = true)
     void updateEntityFromDTO(ProductRequestDTO requestDTO, @MappingTarget Product product);
 }

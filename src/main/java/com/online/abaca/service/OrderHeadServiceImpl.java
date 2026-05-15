@@ -15,6 +15,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,20 +35,36 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     @Transactional
     public OrderHeadResponseDTO createOrderHead(OrderHeadRequestDTO requestDTO) {
         Buyer buyer = buyerRepository.findById(requestDTO.getIdBuyer())
-                .orElseThrow(() -> new EntityNotFoundException("Buyer not found with id: " + requestDTO.getIdBuyer()));
+                .orElseThrow(() -> new EntityNotFoundException("Buyer not found"));
         Address address = addressRepository.findById(requestDTO.getIdShippingAddress())
-                .orElseThrow(() -> new EntityNotFoundException("Address not found with id: " + requestDTO.getIdShippingAddress()));
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
         OrderHead orderHead = orderHeadMapper.toEntity(requestDTO);
         orderHead.setBuyer(buyer);
         orderHead.setShippingAddress(address);
+
+        BigDecimal shippingFee = calculateShippingFee(address.getMunicipality());
+
         if (requestDTO.getIdCart() != null) {
             CartHead cartHead = cartHeadRepository.findById(requestDTO.getIdCart())
-                    .orElseThrow(() -> new EntityNotFoundException("CartHead not found with id: " + requestDTO.getIdCart()));
+                    .orElseThrow(() -> new EntityNotFoundException("CartHead not found"));
             orderHead.setCartHead(cartHead);
         }
         orderHead.setOrderDate(LocalDateTime.now());
         OrderHead savedOrderHead = orderHeadRepository.save(orderHead);
         return orderHeadMapper.toResponseDTO(savedOrderHead);
+    }
+    private BigDecimal calculateShippingFee(String destinationMunicipality) {
+        if (destinationMunicipality == null) {
+            return new BigDecimal("150.00"); // default fare
+            }
+
+        return switch (destinationMunicipality.trim().toUpperCase()) {
+            case "DARAGA" -> new BigDecimal("50.00"); // Base rate
+            case "LEGAZPI CITY", "LEGAZPI", "CAMALIG" -> new BigDecimal("80.00"); // pag tabi lang
+            case "TABACO", "LIGAO", "GUINOBATAN", "POLANGUI", "OAS", "BACACAY", "MALILIPOT", "STO DOMINGO" -> new BigDecimal("100.00"); // Extended Albay
+            default -> new BigDecimal("150.00"); // Outside Albay
+        };
     }
 
     @Override

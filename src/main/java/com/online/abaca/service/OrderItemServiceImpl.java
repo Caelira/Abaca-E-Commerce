@@ -29,9 +29,18 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Transactional
     public OrderItemResponseDTO createOrderItem(OrderItemRequestDTO requestDTO) {
         OrderHead orderHead = orderHeadRepository.findById(requestDTO.getIdOrder())
-                .orElseThrow(() -> new EntityNotFoundException("OrderHead not found with id: " + requestDTO.getIdOrder()));
+                .orElseThrow(() -> new EntityNotFoundException("OrderHead not found"));
         Product product = productRepository.findById(requestDTO.getIdProduct())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + requestDTO.getIdProduct()));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        // bawas stock and increment sales instantly
+        if (product.getStockQuantity() < requestDTO.getOrderQuantity()) {
+            throw new IllegalStateException("Insufficient stock for product: " + product.getProductName());
+        }
+        product.setStockQuantity(product.getStockQuantity() - requestDTO.getOrderQuantity());
+        product.setTotalSold(product.getTotalSold() + requestDTO.getOrderQuantity());
+        productRepository.save(product);
+
         OrderItem orderItem = orderItemMapper.toEntity(requestDTO);
         orderItem.setOrderHead(orderHead);
         orderItem.setProduct(product);

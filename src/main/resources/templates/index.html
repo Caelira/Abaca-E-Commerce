@@ -5,6 +5,22 @@
     <title>Title</title>
 </head>
 <body>
-    send money
+<hr>
+Login:
+<form th:action="@{/showLoginPage}" method="get" style="display:inline;">
+    <input type="submit" value="Login">
+</form>
+<br>
+Signup:
+<form th:action="@{/showSignupPage}" method="get" style="display:inline;">
+    <input type="submit" value="Signup">
+</form><hr>
+Wares: <br>
+<div th:each="product : ${products}">
+    Item: <p th:text="${product.getProductName()}" ></p><br>
+    Price: <p th:text="${product.getProductPrice()}" ></p>
+    Stock: <p th:text="${product.getStockQuantity()}" ></p>
+
+</div>
 </body>
 </html>

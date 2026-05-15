@@ -28,7 +28,14 @@ public class UserAccountServiceImpl implements UserAccountService {
         UserAccount savedAccount = userAccountRepository.save(userAccount);
         return userAccountMapper.toResponseDTO(savedAccount);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public UserAccountResponseDTO getUserByEmail(String email) {
+        UserAccount userAccount = userAccountRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("UserAccount not found with email: " + email));
 
+        return userAccountMapper.toResponseDTO(userAccount);
+    }
     @Override
     @Transactional(readOnly = true)
     public UserAccountResponseDTO getUserAccountById(Long idUser) {

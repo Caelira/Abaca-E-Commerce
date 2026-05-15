@@ -12,6 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,12 +30,16 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO requestDTO) {
         Seller seller = sellerRepository.findById(requestDTO.getIdSeller())
-                .orElseThrow(() -> new EntityNotFoundException("Seller not found with id: " + requestDTO.getIdSeller()));
+                .orElseThrow(() -> new EntityNotFoundException("Seller not found"));
         Category category = categoryRepository.findById(requestDTO.getIdCategory())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + requestDTO.getIdCategory()));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+
         Product product = productMapper.toEntity(requestDTO);
         product.setSeller(seller);
         product.setCategory(category);
+        product.setCreatedAt(LocalDateTime.now());
+        product.setTotalSold(0);
+
         Product savedProduct = productRepository.save(product);
         return productMapper.toResponseDTO(savedProduct);
     }

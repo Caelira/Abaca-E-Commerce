@@ -23,7 +23,12 @@ public class ProductRequestDTO {
     @Positive(message = "Price must be positive")
     private BigDecimal productPrice;
 
+    @Positive(message = "Original price must be positive")
+    private BigDecimal originalPrice;
+
     @NotNull(message = "Stock quantity is required")
     @Min(value = 0, message = "Stock cannot be negative")
     private Integer stockQuantity;
+
+    private byte[] productImage;
 }
