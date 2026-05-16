@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main class="container" style="max-width: 900px;">
+
+    <div style="background: var(--card-bg); padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">My Profile</h2>
+
+        <div th:if="${param.profileSuccess}" style="background: #E8F5E9; color: #2E7D32; padding: 15px; border-radius: 6px; margin-bottom: 20px;">Profile updated successfully!</div>
+        <div th:if="${param.passwordSuccess}" style="background: #E8F5E9; color: #2E7D32; padding: 15px; border-radius: 6px; margin-bottom: 20px;">Password updated successfully!</div>
+
+        <div style="display: flex; gap: 60px; margin-top: 30px;">
+            <div style="flex: 1;">
+                <form th:action="@{/account/update-profile}" method="post">
+                    <label class="fw-bold text-muted">Full Name</label>
+                    <input type="text" name="fullName" th:value="${account.fullName}" class="form-input">
+
+                    <label class="fw-bold text-muted">Email Address (Login ID)</label>
+                    <input type="email" name="email" th:value="${account.email}" required class="form-input">
+
+                    <label class="fw-bold text-muted">Phone Number</label>
+                    <input type="text" name="phoneNumber" th:value="${account.phoneNumber}" class="form-input">
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Save Profile</button>
+                </form>
+            </div>
+
+            <div style="width: 1px; background: var(--border-color);"></div>
+
+            <div style="flex: 1;">
+                <form th:action="@{/account/update-password}" method="post">
+                    <label class="fw-bold text-muted">Change Password</label>
+                    <input type="password" name="newPassword" required placeholder="Enter new password" class="form-input">
+
+                    <button type="submit" class="btn btn-outline" style="width: 100%; margin-top: 10px;">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

@@ -17,7 +17,7 @@
 
         <div th:if="${!#lists.isEmpty(addresses)}" style="display: flex; align-items: center; justify-content: space-between;">
             <div style="display: flex; gap: 15px; font-size: 1.1em; color: #333;">
-                <strong th:text="${currentUser.username}"></strong>
+                <strong th:text="${currentUser.fullName}"></strong>
                 <span>
                         <span th:text="${selectedAddress.street}"></span>,
                         Brgy. <span th:text="${selectedAddress.brgy}"></span>,
@@ -109,7 +109,7 @@
 
                     <div style="flex: 1;">
                         <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
-                            <strong th:text="${currentUser.username}"></strong>
+                            <strong th:text="${currentUser.fullName}"></strong>
                             <span style="border: 1px solid #ee4d2d; color: #ee4d2d; font-size: 0.7em; padding: 2px 5px; border-radius: 2px;" th:text="${addr.addressType}"></span>
                         </div>
                         <div style="color: #666; font-size: 0.9em; line-height: 1.5;">

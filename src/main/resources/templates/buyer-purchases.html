@@ -8,7 +8,7 @@
             <div style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 1.5em; color: white; font-weight: bold;" th:text="${#strings.substring(currentUser.username,0,1).toUpperCase()}"></div>
             <div>
                 <div style="font-weight: bold; color: #333;" th:text="${currentUser.username}"></div>
-                <div style="font-size: 0.8em; color: #888;">✎ Edit Profile</div>
+                <a th:href="@{/account/settings}" style="font-size: 0.8em; color: #888; text-decoration: none;">✎ Edit Profile</a>
             </div>
         </div>
         <ul style="list-style: none; padding: 0; line-height: 2.5; margin: 0;">

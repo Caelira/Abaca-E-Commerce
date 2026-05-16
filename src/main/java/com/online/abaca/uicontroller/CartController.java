@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class CartController {
     private final CartHeadRepository cartHeadRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductService productService;
+
     @GetMapping
     public String viewCart(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         Buyer buyer = buyerRepository.findByUserAccount_IdUser(user.getIdUser())
@@ -53,7 +55,7 @@ public class CartController {
         }
 
         Page<ProductResponseDTO> recommendations = productService.getDailyDiscoverFeed(0, 12);
-        model.addAttribute("recommendations", recommendations.getContent());
+        model.addAttribute("recommendedProducts", recommendations.getContent());
 
         return "cart";
     }
@@ -62,27 +64,20 @@ public class CartController {
     public String addToCart(
             @RequestParam("productId") Long productId,
             @RequestParam("quantity") Integer quantity,
-            @RequestParam(value = "action", defaultValue = "add") String action,
+            @RequestParam(value = "action", required = false, defaultValue = "add") String action,
             @AuthenticationPrincipal CustomUserDetails user) {
-
         try {
             cartItemService.addItemToCart(user.getIdUser(), productId, quantity);
-
-            if ("buy".equalsIgnoreCase(action)) {
-                return "redirect:/cart"; }
-            return "redirect:/products/" + productId + "?added=true"; // Keep them on the product page
-
+            if ("buy".equals(action)) return "redirect:/cart";
+            return "redirect:/products/" + productId + "?added=true";
         } catch (Exception e) {
             return "redirect:/products/" + productId + "?error=" + e.getMessage();
         }
     }
+
     @PostMapping("/remove")
     public String removeCartItem(@RequestParam("cartItemId") Long cartItemId, @AuthenticationPrincipal CustomUserDetails user) {
-        cartItemRepository.findById(cartItemId).ifPresent(item -> {
-            if (item.getCartHead().getBuyer().getUserAccount().getIdUser().equals(user.getIdUser())) {
-                cartItemRepository.delete(item);
-            }
-        });
+        cartItemService.removeCartItem(user.getIdUser(), cartItemId);
         return "redirect:/cart";
     }
 }

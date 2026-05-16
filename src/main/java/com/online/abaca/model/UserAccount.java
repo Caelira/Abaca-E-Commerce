@@ -13,7 +13,11 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "iduser")
     private Long idUser;
+    @Column(name = "full_name")
+    private String fullName;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
     @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
     @Column(name = "password", length = 255, nullable = false)
@@ -26,6 +30,21 @@ public class UserAccount {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public Long getIdUser() {
         return idUser;

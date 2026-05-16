@@ -63,7 +63,7 @@
                         <span th:if="${cartCount > 0}" th:text="${cartCount}" style="position: absolute; top: -5px; right: -10px; background: white; color: #ee4d2d; border-radius: 10px; padding: 2px 6px; font-size: 0.6em; font-weight: bold;"></span>
                     </a>
 
-                    <a th:href="@{/buyer/purchases}" style="color: white; text-decoration: none; font-weight: bold;" th:text="${currentUser.username}"></a>
+                    <a th:href="@{/buyer/purchases}" style="color: white; text-decoration: none; font-weight: bold;" th:text="${currentUser.fullName}"></a>
 
                     <form th:action="@{/logout}" method="post" style="display:inline;">
                         <button type="submit" style="background:none; border:none; color:white; cursor:pointer; margin-left: 15px; font-size: 0.9em; opacity: 0.8;">Logout</button>

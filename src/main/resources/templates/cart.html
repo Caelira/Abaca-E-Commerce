@@ -4,6 +4,7 @@
 <main style="max-width: 1200px; margin: 20px auto;">
 
     <div style="background: white; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 40px;">
+
         <div style="display: flex; padding: 20px; border-bottom: 1px solid #f5f5f5; color: #888; font-size: 0.9em;">
             <div style="width: 5%;"> <input type="checkbox" id="selectAllTop" checked style="cursor: pointer;"> </div>
             <div style="width: 45%;">Product</div>
@@ -19,11 +20,11 @@
         </div>
 
         <div th:if="${!#lists.isEmpty(cartItems)}">
+
             <div th:each="item : ${cartItems}" style="display: flex; padding: 20px; border-bottom: 1px solid #f5f5f5; align-items: center;">
                 <div style="width: 5%;">
-                    <input type="checkbox" class="item-checkbox" checked style="cursor: pointer;" th:data-price="${item.product.productPrice * item.quantity}">
+                    <input type="checkbox" class="item-checkbox" checked th:data-price="${item.product.productPrice * item.quantity}" style="cursor: pointer;">
                 </div>
-
                 <div style="width: 45%; display: flex; gap: 15px;">
                     <img th:src="@{/products/image/{id}(id=${item.product.idProduct})}" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd;">
                     <div style="display: flex; flex-direction: column; justify-content: center;">
@@ -31,13 +32,19 @@
                     </div>
                 </div>
                 <div style="width: 15%; text-align: center; color: #333;">₱<span th:text="${item.product.productPrice}"></span></div>
-                <div style="width: 15%; text-align: center; color: #333;" th:text="${item.quantity}"></div>
-                <div style="width: 10%; text-align: center; color: #ee4d2d; font-weight: bold;">₱<span th:text="${item.product.productPrice * item.quantity}"></span></div>
+                <div style="width: 15%; display: flex; justify-content: center;">
+                    <div style="border: 1px solid #ccc; display: flex; width: 100px; height: 32px; align-items: center; justify-content: center;">
+                        <span th:text="${item.quantity}" style="font-weight: bold; color: #333;"></span>
+                    </div>
+                </div>
+                <div style="width: 10%; text-align: center; color: #ee4d2d; font-weight: bold;">
+                    ₱<span th:text="${item.product.productPrice * item.quantity}"></span>
+                </div>
 
                 <div style="width: 10%; text-align: center;">
                     <form th:action="@{/cart/remove}" method="post">
-                        <input type="hidden" name="cartItemId" th:value="${item.idcartItem}">
-                        <button type="submit" style="background: none; border: none; color: #888; cursor: pointer; text-decoration: underline;">Delete</button>
+                        <input type="hidden" name="cartItemId" th:value="${item.idCartItem}">
+                        <button type="submit" style="background: none; border: none; color: #333; cursor: pointer; text-decoration: underline;">Delete</button>
                     </form>
                 </div>
             </div>
@@ -48,10 +55,10 @@
                 </div>
                 <div style="width: 50%; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
                     <div>
-                        Total (<span id="cart-total-count" th:text="${#lists.size(cartItems)}"></span> item):
-                        <span style="color: #ee4d2d; font-size: 1.8em; font-weight: bold; margin-left: 10px;">₱<span id="cart-total-price" th:text="${cartTotal}"></span></span>
+                        Total (<span id="totalItemsCount" th:text="${#lists.size(cartItems)}"></span> item):
+                        <span style="color: #ee4d2d; font-size: 1.8em; font-weight: bold; margin-left: 10px;">₱<span id="cartTotalPrice" th:text="${cartTotal}"></span></span>
                     </div>
-                    <a id="checkout-btn" th:href="@{/checkout}" style="background: #ee4d2d; color: white; padding: 15px 50px; text-decoration: none; font-size: 1.1em; border-radius: 2px;">Check Out</a>
+                    <a th:href="@{/checkout}" style="background: #ee4d2d; color: white; padding: 15px 50px; text-decoration: none; font-size: 1.1em; border-radius: 2px;">Check Out</a>
                 </div>
             </div>
         </div>
@@ -59,7 +66,7 @@
 
     <div>
         <div style="padding: 15px; background: white; margin-bottom: 2px; color: #888; font-weight: bold;">YOU MAY ALSO LIKE</div>
-        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;" id="product-grid">
             <div th:each="product : ${recommendedProducts}" style="background: white; transition: transform 0.2s;">
                 <a th:href="@{/products/{id}(id=${product.idProduct})}" style="text-decoration: none; color: inherit; display: block; height: 100%;">
                     <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover;">
@@ -76,48 +83,39 @@
     </div>
 
     <script>
-        function calculateTotal() {
+        function updateCartTotal() {
             let total = 0;
             let count = 0;
             document.querySelectorAll('.item-checkbox').forEach(cb => {
                 if (cb.checked) {
-                    total += parseFloat(cb.dataset.price);
+                    total += parseFloat(cb.getAttribute('data-price'));
                     count++;
                 }
             });
-
-            const priceElem = document.getElementById('cart-total-price');
-            const countElem = document.getElementById('cart-total-count');
-            if(priceElem) priceElem.innerText = total.toFixed(2);
-            if(countElem) countElem.innerText = count;
-
-            const checkoutBtn = document.getElementById('checkout-btn');
-            if(checkoutBtn) {
-                if(count > 0) {
-                    checkoutBtn.style.background = '#ee4d2d';
-                    checkoutBtn.style.pointerEvents = 'auto';
-                } else {
-                    checkoutBtn.style.background = '#ccc';
-                    checkoutBtn.style.pointerEvents = 'none';
-                }
-            }
+            document.getElementById('cartTotalPrice').innerText = total.toFixed(2);
+            document.getElementById('totalItemsCount').innerText = count;
         }
 
-        document.querySelectorAll('.item-checkbox').forEach(cb => cb.addEventListener('change', calculateTotal));
+        document.querySelectorAll('.item-checkbox').forEach(cb => {
+            cb.addEventListener('change', updateCartTotal);
+        });
 
-        const topAll = document.getElementById('selectAllTop');
-        const botAll = document.getElementById('selectAllBottom');
+        document.getElementById('selectAllTop').addEventListener('change', function() {
+            let state = this.checked;
+            document.getElementById('selectAllBottom').checked = state;
+            document.querySelectorAll('.item-checkbox').forEach(cb => { cb.checked = state; });
+            updateCartTotal();
+        });
 
-        function toggleAll(event) {
-            const isChecked = event.target.checked;
-            if(topAll) topAll.checked = isChecked;
-            if(botAll) botAll.checked = isChecked;
-            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = isChecked);
-            calculateTotal();
+        const bottomSelectAll = document.getElementById('selectAllBottom');
+        if(bottomSelectAll) {
+            bottomSelectAll.addEventListener('change', function() {
+                let state = this.checked;
+                document.getElementById('selectAllTop').checked = state;
+                document.querySelectorAll('.item-checkbox').forEach(cb => { cb.checked = state; });
+                updateCartTotal();
+            });
         }
-
-        if(topAll) topAll.addEventListener('change', toggleAll);
-        if(botAll) botAll.addEventListener('change', toggleAll);
     </script>
 </main>
 </body>

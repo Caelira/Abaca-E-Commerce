@@ -30,6 +30,12 @@ public class CustomUserDetails implements UserDetails {
                 .toList();
     }
 
+    public String getFullName() {
+        if (userAccount.getFullName() != null && !userAccount.getFullName().trim().isEmpty()) {
+            return userAccount.getFullName();
+        }
+        return userAccount.getEmail().split("@")[0];
+    }
     @Override
     public String getPassword() {
         return userAccount.getPassword();

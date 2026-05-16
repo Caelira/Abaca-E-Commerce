@@ -15,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +29,23 @@ public class CartItemServiceImpl implements CartItemService {
     private final ProductRepository productRepository;
     private final CartItemMapper cartItemMapper;
     private final BuyerRepository buyerRepository;
+
+
+    @Override
+    @Transactional
+    public void removeCartItem(Long idUser, Long idCartItem) {
+        Buyer buyer = buyerRepository.findByUserAccount_IdUser(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("Buyer not found"));
+        CartHead cart = cartHeadRepository.findByBuyer_IdBuyerAndStatus(buyer.getIdBuyer(), "ACTIVE")
+                .orElseThrow(() -> new EntityNotFoundException("Active cart not found"));
+
+        CartItem item = cartItemRepository.findById(idCartItem)
+                .orElseThrow(() -> new EntityNotFoundException("Cart item not found"));
+
+        if (item.getCartHead().getIdCart().equals(cart.getIdCart())) {
+            cartItemRepository.delete(item);
+        }
+    }
 
     @Override
     @Transactional
@@ -43,7 +61,7 @@ public class CartItemServiceImpl implements CartItemService {
                     return cartHeadRepository.save(newCart);
                 });
 
-         Product product = productRepository.findById(idProduct)
+        Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
         if (product.getStockQuantity() < quantity) {
@@ -70,6 +88,7 @@ public class CartItemServiceImpl implements CartItemService {
             cartItemRepository.save(newItem);
         }
     }
+
     @Override
     @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO requestDTO) {

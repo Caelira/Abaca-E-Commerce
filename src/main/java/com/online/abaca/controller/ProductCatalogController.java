@@ -3,6 +3,7 @@ package com.online.abaca.controller;
 import com.online.abaca.dto.ProductResponseDTO;
 import com.online.abaca.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,10 @@ public class ProductCatalogController {
     public String productDetail(@PathVariable("id") Long idProduct, Model model) {
         ProductResponseDTO product = productService.getProductById(idProduct);
         model.addAttribute("product", product);
+
+        Page<ProductResponseDTO> recommendations = productService.getDailyDiscoverFeed(0, 12);
+        model.addAttribute("recommendedProducts", recommendations.getContent());
+
         return "product-detail";
     }
 
