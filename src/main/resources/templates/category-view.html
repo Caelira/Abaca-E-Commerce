@@ -2,14 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
 <main>
-    <h2>Categories</h2>
-    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <div th:each="category : ${categories}" style="border: 1px solid #ccc; padding: 10px;">
-            <a th:href="@{/category/{id}(id=${category.idCategory})}" th:text="${category.categoryName}" style="text-decoration: none; color: black;"></a>
-        </div>
+    <div style="background: white; padding: 20px; margin-bottom: 20px;">
+        <h2 th:text="${category.categoryName}" style="color: #ee4d2d; margin: 0 0 10px 0;"></h2>
+        <p th:text="${category.description}" style="color: #666; margin: 0;"></p>
     </div>
 
-    <h2>Daily Discover</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="product-grid">
         <div th:each="product : ${products}" style="border: 1px solid #ccc; width: 200px; padding: 10px; background: white;">
             <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; height: 150px; background: #eee; object-fit: cover;">

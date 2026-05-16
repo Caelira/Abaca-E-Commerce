@@ -3,9 +3,11 @@ package com.online.abaca.service;
 import com.online.abaca.dto.CartItemRequestDTO;
 import com.online.abaca.dto.CartItemResponseDTO;
 import com.online.abaca.mapper.CartItemMapper;
+import com.online.abaca.model.Buyer;
 import com.online.abaca.model.CartHead;
 import com.online.abaca.model.CartItem;
 import com.online.abaca.model.Product;
+import com.online.abaca.repository.BuyerRepository;
 import com.online.abaca.repository.CartHeadRepository;
 import com.online.abaca.repository.CartItemRepository;
 import com.online.abaca.repository.ProductRepository;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +27,49 @@ public class CartItemServiceImpl implements CartItemService {
     private final CartHeadRepository cartHeadRepository;
     private final ProductRepository productRepository;
     private final CartItemMapper cartItemMapper;
+    private final BuyerRepository buyerRepository;
 
+    @Override
+    @Transactional
+    public void addItemToCart(Long idUser, Long idProduct, Integer quantity) {
+        Buyer buyer = buyerRepository.findByUserAccount_IdUser(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("Buyer profile not found"));
+
+        CartHead cart = cartHeadRepository.findByBuyer_IdBuyerAndStatus(buyer.getIdBuyer(), "ACTIVE")
+                .orElseGet(() -> {
+                    CartHead newCart = new CartHead();
+                    newCart.setBuyer(buyer);
+                    newCart.setStatus("ACTIVE");
+                    return cartHeadRepository.save(newCart);
+                });
+
+         Product product = productRepository.findById(idProduct)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        if (product.getStockQuantity() < quantity) {
+            throw new IllegalStateException("Not enough stock available.");
+        }
+
+        Optional<CartItem> existingItemOpt = cartItemRepository.findByCartHead_IdCartAndProduct_IdProduct(cart.getIdCart(), idProduct);
+
+        if (existingItemOpt.isPresent()) {
+            CartItem existingItem = existingItemOpt.get();
+            int newQuantity = existingItem.getQuantity() + quantity;
+
+            if (product.getStockQuantity() < newQuantity) {
+                throw new IllegalStateException("Adding this would exceed available stock.");
+            }
+
+            existingItem.setQuantity(newQuantity);
+            cartItemRepository.save(existingItem);
+        } else {
+            CartItem newItem = new CartItem();
+            newItem.setCartHead(cart);
+            newItem.setProduct(product);
+            newItem.setQuantity(quantity);
+            cartItemRepository.save(newItem);
+        }
+    }
     @Override
     @Transactional
     public CartItemResponseDTO createCartItem(CartItemRequestDTO requestDTO) {

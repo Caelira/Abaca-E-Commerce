@@ -11,4 +11,5 @@ public interface OrderHeadService {
     List<OrderHeadResponseDTO> getAllOrderHeads();
     OrderHeadResponseDTO updateOrderHead(Long idOrder, OrderHeadRequestDTO requestDTO);
     void deleteOrderHead(Long idOrder);
+    OrderHeadResponseDTO processCheckout(Long buyerId, Long addressId, String paymentMethod);
 }

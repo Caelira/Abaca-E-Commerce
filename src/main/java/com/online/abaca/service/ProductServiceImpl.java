@@ -10,6 +10,11 @@ import com.online.abaca.repository.ProductRepository;
 import com.online.abaca.repository.SellerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,14 @@ public class ProductServiceImpl implements ProductService {
     private final SellerRepository sellerRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDTO> getProductsByCategory(Long idCategory, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findAllByCategory_IdCategoryOrderByCreatedAtDesc(idCategory, pageable)
+                .map(productMapper::toResponseDTO);
+    }
 
     @Override
     @Transactional
@@ -87,5 +100,21 @@ public class ProductServiceImpl implements ProductService {
             throw new EntityNotFoundException("Product not found with id: " + idProduct);
         }
         productRepository.deleteById(idProduct);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDTO> getDailyDiscoverFeed(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+         return productRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(productMapper::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public byte[] getProductImage(Long idProduct) {
+        Product product = productRepository.findById(idProduct)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        return product.getProductImage();
     }
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="productGrid" th:each="product : ${products}" class="col-6 col-md-4 col-lg-2">
+    <a th:href="@{/products/{id}(id=${product.idProduct})}" class="text-decoration-none text-dark">
+        <div class="card h-100 border-0 shadow-sm rounded-0 position-relative">
+            <img th:src="@{/products/image/{id}(id=${product.idProduct})}" class="card-img-top rounded-0">
+            <div class="card-body p-2 d-flex flex-column">
+                <p class="card-text mb-1" style="font-size: 0.9rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${product.productName}"></p>
+                <div class="mt-auto d-flex justify-content-between align-items-center">
+                    <div>
+                        <span th:if="${product.originalPrice != null}" class="text-decoration-line-through me-1" style="font-size: 0.75rem;" th:text="'₱' + ${product.originalPrice}"></span>
+                        <span class="shopee-text fw-bold" th:text="'₱' + ${product.productPrice}"></span>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.75rem;" th:text="${product.totalSold} + ' sold'"></span>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+</body>
+</html>

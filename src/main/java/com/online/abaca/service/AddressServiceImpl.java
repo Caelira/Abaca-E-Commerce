@@ -23,6 +23,57 @@ public class AddressServiceImpl implements AddressService {
     private final UserAccountRepository userAccountRepository;
     private final AddressMapper addressMapper;
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AddressResponseDTO> getAddressesByUserId(Long idUser) {
+        return addressRepository.findByUserAccount_IdUser(idUser).stream()
+                .map(addressMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public AddressResponseDTO createAddressForUser(Long idUser, AddressRequestDTO requestDTO) {
+        UserAccount userAccount = userAccountRepository.findById(idUser)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Address address = addressMapper.toEntity(requestDTO);
+        address.setUserAccount(userAccount);
+        Address savedAddress = addressRepository.save(address);
+        return addressMapper.toResponseDTO(savedAddress);
+    }
+
+    @Override
+    @Transactional
+    public AddressResponseDTO updateAddressForUser(Long idUser, Long idAddress, AddressRequestDTO requestDTO) {
+        Address existingAddress = addressRepository.findById(idAddress)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+         if (!existingAddress.getUserAccount().getIdUser().equals(idUser)) {
+            throw new SecurityException("Unauthorized to edit this address");
+        }
+
+        addressMapper.updateEntityFromDTO(requestDTO, existingAddress);
+        Address updatedAddress = addressRepository.save(existingAddress);
+        return addressMapper.toResponseDTO(updatedAddress);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAddressForUser(Long idUser, Long idAddress) {
+        Address existingAddress = addressRepository.findById(idAddress)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+        if (!existingAddress.getUserAccount().getIdUser().equals(idUser)) {
+            throw new SecurityException("Unauthorized to delete this address");
+        }
+
+        addressRepository.delete(existingAddress);
+    }
+
+
+
+
     @Override
     @Transactional
     public AddressResponseDTO createAddress(AddressRequestDTO requestDTO) {

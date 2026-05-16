@@ -3,14 +3,8 @@ package com.online.abaca.service;
 import com.online.abaca.dto.OrderHeadRequestDTO;
 import com.online.abaca.dto.OrderHeadResponseDTO;
 import com.online.abaca.mapper.OrderHeadMapper;
-import com.online.abaca.model.Address;
-import com.online.abaca.model.Buyer;
-import com.online.abaca.model.CartHead;
-import com.online.abaca.model.OrderHead;
-import com.online.abaca.repository.AddressRepository;
-import com.online.abaca.repository.BuyerRepository;
-import com.online.abaca.repository.CartHeadRepository;
-import com.online.abaca.repository.OrderHeadRepository;
+import com.online.abaca.model.*;
+import com.online.abaca.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +24,10 @@ public class OrderHeadServiceImpl implements OrderHeadService {
     private final CartHeadRepository cartHeadRepository;
     private final AddressRepository addressRepository;
     private final OrderHeadMapper orderHeadMapper;
+    private final CartItemRepository cartItemRepository;
+    private  final OrderItemRepository orderItemRepository;
+    private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     @Transactional
@@ -117,5 +115,53 @@ public class OrderHeadServiceImpl implements OrderHeadService {
             throw new EntityNotFoundException("OrderHead not found with id: " + idOrder);
         }
         orderHeadRepository.deleteById(idOrder);
+    }
+    @Transactional
+    public OrderHeadResponseDTO processCheckout(Long buyerId, Long addressId, String paymentMethod) {
+        CartHead cart = cartHeadRepository.findByBuyer_IdBuyerAndStatus(buyerId, "ACTIVE")
+                .orElseThrow(() -> new IllegalStateException("No active cart found"));
+
+        OrderHeadRequestDTO orderReq = new OrderHeadRequestDTO();
+        orderReq.setIdBuyer(buyerId);
+        orderReq.setIdShippingAddress(addressId);
+        orderReq.setIdCart(cart.getIdCart());
+        orderReq.setOrderStatus("PENDING");
+        OrderHeadResponseDTO newOrder = createOrderHead(orderReq);
+
+        OrderHead orderEntity = orderHeadRepository.findById(newOrder.getIdOrder()).orElseThrow();
+
+         List<CartItem> cartItems = cartItemRepository.findAllByCartHead_IdCart(cart.getIdCart());
+        BigDecimal totalOrderAmount = calculateShippingFee(orderEntity.getShippingAddress().getMunicipality());
+
+        for (CartItem cItem : cartItems) {
+            Product product = cItem.getProduct();
+
+            if (product.getStockQuantity() < cItem.getQuantity()) {
+                throw new IllegalStateException("Not enough stock for " + product.getProductName());
+            }
+            product.setStockQuantity(product.getStockQuantity() - cItem.getQuantity());
+            product.setTotalSold(product.getTotalSold() + cItem.getQuantity());
+            productRepository.save(product);
+
+            OrderItem oItem = new OrderItem();
+            oItem.setOrderHead(orderEntity);
+            oItem.setProduct(product);
+            oItem.setOrderQuantity(cItem.getQuantity());
+            oItem.setFinalUnitPrice(product.getProductPrice()); // Lock in the price
+            orderItemRepository.save(oItem);
+
+            BigDecimal itemTotal = product.getProductPrice().multiply(new BigDecimal(cItem.getQuantity()));
+            totalOrderAmount = totalOrderAmount.add(itemTotal);
+        }
+        Payment payment = new Payment();
+        payment.setOrderHead(orderEntity);
+        payment.setPaymentAmount(totalOrderAmount);
+        payment.setPaymentMethod(paymentMethod);
+        payment.setPaymentDate(LocalDateTime.now());
+        paymentRepository.save(payment);
+        cart.setStatus("CHECKED_OUT");
+        cartHeadRepository.save(cart);
+
+        return newOrder;
     }
 }

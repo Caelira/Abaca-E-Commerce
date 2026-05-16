@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main style="background: white; padding: 20px; display: flex; gap: 30px; max-width: 1200px; margin: 20px auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+
+  <div style="width: 450px;">
+    <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; height: 450px; object-fit: cover; background: #eee; border: 1px solid #ddd;">
+  </div>
+
+  <div style="flex: 1; padding: 10px;">
+    <h1 th:text="${product.productName}" style="margin-top: 0; font-size: 1.5em; color: #333;"></h1>
+
+    <div style="background: #fafafa; padding: 20px; margin-bottom: 20px; margin-top: 20px;">
+      <div th:if="${product.originalPrice != null}" style="text-decoration: line-through; color: #888; margin-bottom: 5px;">
+        ₱<span th:text="${product.originalPrice}"></span>
+      </div>
+      <h2 style="color: #ee4d2d; margin: 0; font-size: 2.2em;">₱<span th:text="${product.productPrice}"></span></h2>
+    </div>
+
+    <p style="color: #666; display: flex; gap: 20px;">
+      <span>Stock: <strong th:text="${product.stockQuantity}"></strong></span>
+      <span>Sold: <strong th:text="${product.totalSold}"></strong></span>
+    </p>
+
+    <div sec:authorize="hasRole('BUYER')">
+      <form th:action="@{/cart/add}" method="post" style="margin-top: 30px;">
+        <input type="hidden" name="productId" th:value="${product.idProduct}">
+
+        <div style="display: flex; align-items: center; margin-bottom: 30px;">
+          <span style="color: #757575; width: 100px;">Quantity</span>
+          <div style="display: flex; border: 1px solid #ccc; background: white;">
+            <input type="number" name="quantity" value="1" min="1" th:max="${product.stockQuantity}" style="width: 60px; padding: 8px; border: none; outline: none; text-align: center;">
+          </div>
+          <span style="color: #757575; margin-left: 15px;" th:text="${product.stockQuantity} + ' pieces available'"></span>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+          <button type="submit" name="action" value="add" style="background: #ffeedb; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 12px 30px; cursor: pointer; font-size: 1em; display: flex; align-items: center; gap: 10px;">
+            🛒 Add To Cart
+          </button>
+          <button type="submit" name="action" value="buy" style="background: #ee4d2d; color: white; border: 1px solid #ee4d2d; padding: 12px 40px; cursor: pointer; font-size: 1em;">
+            Buy Now
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div sec:authorize="isAnonymous()">
+      <div style="margin-top: 30px; display: flex; gap: 15px;">
+        <button onclick="openModal('loginForm')" style="background: #ffeedb; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 12px 30px; cursor: pointer; font-size: 1em;">🛒 Add To Cart</button>
+        <button onclick="openModal('loginForm')" style="background: #ee4d2d; color: white; border: 1px solid #ee4d2d; padding: 12px 40px; cursor: pointer; font-size: 1em;">Buy Now</button>
+      </div>
+    </div>
+
+    <div sec:authorize="hasRole('SELLER')">
+      <p style="color: #ee4d2d; margin-top: 30px; font-weight: bold;">Sellers cannot purchase items. Please log in with a Buyer account.</p>
+    </div>
+  </div>
+</main>
+</body>
+</html>

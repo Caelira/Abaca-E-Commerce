@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>My Addresses</title>
+    <style>
+        .address-card { border: 1px solid black; padding: 15px; margin-bottom: 10px; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .btn { padding: 5px 10px; text-decoration: none; border: 1px solid black; background: #f0f0f0; color: black; cursor: pointer;}
+        .btn-danger { background: #ffcccc; }
+    </style>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>My Addresses</h2>
+        <a th:href="@{/profile/addresses/add}" class="btn">Add New Address</a>
+    </div>
+
+    <div th:if="${param.error}" style="color: red; margin-bottom: 10px;">
+        You are not authorized to edit that address.
+    </div>
+
+    <div th:if="${#lists.isEmpty(addresses)}">
+        <p>You have no saved addresses yet.</p>
+    </div>
+
+    <div th:each="addr : ${addresses}" class="address-card">
+        <div style="font-weight: bold;" th:text="${addr.addressType}">Home</div>
+        <div th:text="${addr.street} + ', ' + ${addr.brgy}">123 Main St, Brgy</div>
+        <div th:text="${addr.municipality} + ', ' + ${addr.province}">Daraga, Albay</div>
+
+        <div class="action-buttons">
+            <a th:href="@{/profile/addresses/edit/{id}(id=${addr.idAddress})}" class="btn">Edit</a>
+
+            <form th:action="@{/profile/addresses/delete/{id}(id=${addr.idAddress})}" method="post" onsubmit="return confirm('Delete this address?');">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

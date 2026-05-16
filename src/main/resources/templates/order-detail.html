@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main style="max-width: 1000px; margin: 20px auto;">
+
+    <div th:if="${param.success}" style="background: #e8f5e9; border: 1px solid #4caf50; padding: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; border-radius: 3px;">
+        <div style="background: #4caf50; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold;">✓</div>
+        <div>
+            <h3 style="margin: 0; color: #2e7d32;">Order Placed Successfully!</h3>
+            <p style="margin: 5px 0 0 0; color: #388e3c;">Thank you for shopping. Your order has been received and is being processed.</p>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
+            <h2 style="margin: 0; color: #333;">Order Details</h2>
+            <div style="text-align: right;">
+                <div style="color: #888; font-size: 0.9em;">ORDER ID</div>
+                <div style="font-weight: bold; font-size: 1.2em;" th:text="'#' + ${order.idOrder}"></div>
+                <div style="color: #ee4d2d; font-weight: bold; margin-top: 5px;" th:text="${order.orderStatus}"></div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 40px; margin-bottom: 30px;">
+            <div style="flex: 1;">
+                <h4 style="color: #888; margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;">Delivery Address</h4>
+                <strong th:text="${currentUser.username}"></strong>
+                <div style="color: #555; line-height: 1.5; margin-top: 5px;">
+                    <span th:text="${order.idShippingAddress}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <div style="background: #fafafa; padding: 15px 20px; font-weight: bold; border-bottom: 1px solid #eee; color: #333;">
+            Products Ordered
+        </div>
+
+        <div th:each="item : ${items}" style="display: flex; padding: 20px; border-bottom: 1px solid #eee; align-items: center;">
+            <img th:src="@{/products/image/{id}(id=${item.product.idProduct})}" style="width: 60px; height: 60px; object-fit: cover; border: 1px solid #ddd; margin-right: 15px;">
+            <div style="flex: 1;">
+                <div style="font-weight: bold; color: #333;" th:text="${item.product.productName}"></div>
+                <div style="color: #888; font-size: 0.9em; margin-top: 5px;">Qty: <span th:text="${item.orderQuantity}"></span></div>
+            </div>
+            <div style="color: #ee4d2d; font-weight: bold;">
+                ₱<span th:text="${item.finalUnitPrice * item.orderQuantity}"></span>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between;">
+        <div style="width: 40%;">
+            <h4 style="color: #888; margin-top: 0;">Payment Method</h4>
+            <div th:if="${payment != null}" style="font-weight: bold; color: #333;" th:text="${payment.paymentMethod}"></div>
+        </div>
+
+        <div style="width: 40%;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                <div style="color: #333; font-weight: bold;">Order Total:</div>
+                <div th:if="${payment != null}" style="color: #ee4d2d; font-size: 1.5em; font-weight: bold;">
+                    ₱<span th:text="${payment.paymentAmount}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

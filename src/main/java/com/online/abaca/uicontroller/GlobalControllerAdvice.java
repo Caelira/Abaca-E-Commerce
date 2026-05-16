@@ -1,6 +1,5 @@
 package com.online.abaca.uicontroller;
 
-import com.online.abaca.repository.CartHeadRepository;
 import com.online.abaca.repository.CartItemRepository;
 import com.online.abaca.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -11,27 +10,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice
 @RequiredArgsConstructor
-public class GlobalModelAdvice {
+public class GlobalControllerAdvice {
 
     private final CartItemRepository cartItemRepository;
-    private final CartHeadRepository cartHeadRepository;
 
     @ModelAttribute("currentUser")
     public CustomUserDetails getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUserDetails) {
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
             return (CustomUserDetails) authentication.getPrincipal();
         }
         return null;
     }
 
     @ModelAttribute("cartCount")
-    public int getCartCount() {
-        CustomUserDetails user = getCurrentUser();
-        if (user != null && "BUYER".equalsIgnoreCase(user.getRole())) {
-            return cartHeadRepository.findByBuyer_UserAccount_IdUserAndStatus(user.getIdUser(), "ACTIVE")
-                    .map(cartHead -> cartItemRepository.countByCartHead_IdCart(cartHead.getIdCart()))
-                    .orElse(0L).intValue();
+    public Integer getCartCount(@ModelAttribute("currentUser") CustomUserDetails currentUser) {
+        if (currentUser != null && currentUser.getRole().contains("BUYER")) {
+            Integer count = cartItemRepository.sumQuantityByUserId(currentUser.getIdUser());
+            return count != null ? count : 0;
         }
         return 0;
     }

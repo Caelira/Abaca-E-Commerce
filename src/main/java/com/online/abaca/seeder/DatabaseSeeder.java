@@ -11,8 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Configuration
@@ -41,6 +44,7 @@ public class DatabaseSeeder {
 
             String defaultPassword = passwordEncoder.encode("Password123!");
 
+            // --- USERS ---
             UserAccount sellerUser1 = new UserAccount();
             sellerUser1.setEmail("daraga.handicrafts@gmail.com");
             sellerUser1.setPassword(defaultPassword);
@@ -61,7 +65,8 @@ public class DatabaseSeeder {
 
             userRepo.saveAll(List.of(sellerUser1, sellerUser2, buyerUser1));
 
-             Address addr1 = new Address();
+            // --- ADDRESSES ---
+            Address addr1 = new Address();
             addr1.setUserAccount(sellerUser1);
             addr1.setAddressType("Shop");
             addr1.setStreet("Market Site");
@@ -87,7 +92,8 @@ public class DatabaseSeeder {
 
             addressRepo.saveAll(List.of(addr1, addr2, addr3));
 
-             Seller seller1 = new Seller();
+            // --- SELLERS & BUYERS ---
+            Seller seller1 = new Seller();
             seller1.setUserAccount(sellerUser1);
             seller1.setStoreName("Daraga Native Handicrafts");
             seller1.setContactNumber("09171234567");
@@ -105,6 +111,7 @@ public class DatabaseSeeder {
 
             buyerRepo.save(buyer1);
 
+            // --- CATEGORIES ---
             Category catRaw = new Category();
             catRaw.setCategoryName("Raw Textiles");
             catRaw.setDescription("Unprocessed Sinamay and Pinukpok fibers by the meter.");
@@ -119,39 +126,84 @@ public class DatabaseSeeder {
 
             categoryRepo.saveAll(List.of(catRaw, catBags, catDecor));
 
+            // --- INITIAL PRODUCTS ---
+            List<Product> productsToSave = new ArrayList<>();
+
             Product p1 = new Product();
             p1.setSeller(seller1);
             p1.setCategory(catBags);
             p1.setProductName("Classic Abaca Tote Bag with Leather Straps");
             p1.setProductPrice(new BigDecimal("450.00"));
-            p1.setOriginalPrice(new BigDecimal("600.00")); // check dc
+            p1.setOriginalPrice(new BigDecimal("600.00"));
             p1.setStockQuantity(50);
             p1.setCreatedAt(LocalDateTime.now().minusDays(2));
-            p1.setTotalSold(1250); // 1K+ Sold
+            p1.setTotalSold(1250);
+            productsToSave.add(p1);
 
             Product p2 = new Product();
             p2.setSeller(seller1);
             p2.setCategory(catDecor);
             p2.setProductName("Round Sinamay Area Rug (1.5 Meters)");
             p2.setProductPrice(new BigDecimal("1200.00"));
-            p2.setOriginalPrice(null); // No discount
+            p2.setOriginalPrice(null);
             p2.setStockQuantity(15);
             p2.setCreatedAt(LocalDateTime.now().minusDays(5));
             p2.setTotalSold(45);
+            productsToSave.add(p2);
 
             Product p3 = new Product();
             p3.setSeller(seller2);
             p3.setCategory(catRaw);
             p3.setProductName("Premium Pinukpok Fabric (Per Meter)");
             p3.setProductPrice(new BigDecimal("250.00"));
-            p3.setOriginalPrice(new BigDecimal("300.00")); // check cd
+            p3.setOriginalPrice(new BigDecimal("300.00"));
             p3.setStockQuantity(100);
-            p3.setCreatedAt(LocalDateTime.now().minusHours(4)); // vnew
-            p3.setTotalSold(8900); // 8K+ Sold
+            p3.setCreatedAt(LocalDateTime.now().minusHours(4));
+            p3.setTotalSold(8900);
+            productsToSave.add(p3);
 
-            productRepo.saveAll(List.of(p1, p2, p3));
+            // --- GENERATE 297 MOCK PRODUCTS ---
+            log.info("Generating 297 additional bulk products...");
+            Random random = new Random();
 
-            log.info("Database seeding completed");
+            String[] adjectives = {"Handwoven", "Authentic", "Premium", "Eco-friendly", "Rustic", "Export-Quality", "Traditional", "Native"};
+            String[] materials = {"Abaca", "Sinamay", "Pinukpok", "Rattan-Accented", "Buri-Blend"};
+            String[] items = {"Sling Bag", "Placemat (Set of 4)", "Coin Purse", "Wall Decor", "Storage Basket", "Slippers", "Table Runner", "Sun Hat"};
+
+            List<Seller> sellers = List.of(seller1, seller2);
+            List<Category> categories = List.of(catRaw, catBags, catDecor);
+
+            for (int i = 0; i < 297; i++) {
+                Product p = new Product();
+                p.setSeller(sellers.get(random.nextInt(sellers.size())));
+                p.setCategory(categories.get(random.nextInt(categories.size())));
+
+                 String name = adjectives[random.nextInt(adjectives.length)] + " " +
+                        materials[random.nextInt(materials.length)] + " " +
+                        items[random.nextInt(items.length)];
+                p.setProductName(name + " - Variant " + (i + 1));
+
+                 double basePrice = 100 + (random.nextDouble() * 1400);
+                p.setProductPrice(BigDecimal.valueOf(basePrice).setScale(2, RoundingMode.HALF_UP));
+
+                 if (random.nextBoolean()) {
+                    double markup = 1.1 + (random.nextDouble() * 0.3);
+                    p.setOriginalPrice(BigDecimal.valueOf(basePrice * markup).setScale(2, RoundingMode.HALF_UP));
+                } else {
+                    p.setOriginalPrice(null);
+                }
+
+                p.setStockQuantity(random.nextInt(200) + 5); // 5 to 204 stock
+                p.setCreatedAt(LocalDateTime.now().minusDays(random.nextInt(60))); // Up to 2 months old
+                p.setTotalSold(random.nextInt(3000)); // 0 to 2999 sold
+
+                productsToSave.add(p);
+            }
+
+            // Save all 300n
+            productRepo.saveAll(productsToSave);
+
+            log.info("Database seeding completed successfully. 300 products loaded.");
         };
     }
 }

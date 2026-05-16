@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class AddressRequestDTO {
 
+
     @NotNull(message = "User ID is required")
     private Long idUser;
 
