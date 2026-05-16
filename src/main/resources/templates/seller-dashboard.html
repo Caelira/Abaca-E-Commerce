@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main style="max-width: 1200px; margin: 20px auto; display: flex; gap: 20px;">
+
+    <div style="width: 250px; background: white; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); height: fit-content;">
+        <h3 style="color: #333; margin-top: 0;">Seller Centre</h3>
+        <ul style="list-style: none; padding: 0; line-height: 2.5;">
+            <li><a th:href="@{/seller/dashboard}" style="text-decoration: none; color: #ee4d2d; font-weight: bold;">Dashboard</a></li>
+            <li><a th:href="@{/seller/orders}" style="text-decoration: none; color: #555;">My Orders</a></li>
+            <li><a th:href="@{/seller/products}" style="text-decoration: none; color: #555;">My Products</a></li>
+            <li><a th:href="@{/seller/products/add}" style="text-decoration: none; color: #555;">Add New Product</a></li>
+        </ul>
+    </div>
+
+    <div style="flex: 1;">
+        <div style="background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
+            <h2 style="margin-top: 0; color: #333;">Business Insights</h2>
+            <div style="display: flex; gap: 20px; margin-top: 20px;">
+                <div style="flex: 1; padding: 20px; border: 1px solid #eee; text-align: center;">
+                    <div style="color: #888; margin-bottom: 10px;">Total Sales</div>
+                    <div style="color: #ee4d2d; font-size: 2em; font-weight: bold;">₱<span th:text="${totalSales}"></span></div>
+                </div>
+                <div style="flex: 1; padding: 20px; border: 1px solid #eee; text-align: center;">
+                    <div style="color: #888; margin-bottom: 10px;">Total Items Ordered</div>
+                    <div style="color: #2673dd; font-size: 2em; font-weight: bold;" th:text="${totalOrders}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

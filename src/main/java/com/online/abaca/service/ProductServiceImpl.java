@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +39,13 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAllByCategory_IdCategoryOrderByCreatedAtDesc(idCategory, pageable)
                 .map(productMapper::toResponseDTO);
     }
-
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponseDTO> getProductsBySellerId(Long idSeller) {
+        return productRepository.findBySeller_IdSellerOrderByCreatedAtDesc(idSeller).stream()
+                .map(productMapper::toResponseDTO)
+                .toList();
+    }
     @Override
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO requestDTO) {
@@ -117,4 +124,53 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
         return product.getProductImage();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDTO> searchProducts(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findByProductNameContainingIgnoreCaseOrderByCreatedAtDesc(keyword, pageable)
+                .map(productMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional
+    public void updateProduct(Long idProduct, Long idSeller, ProductRequestDTO requestDTO, MultipartFile imageFile) throws Exception {
+        Product existingProduct = productRepository.findById(idProduct)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        if (!existingProduct.getSeller().getIdSeller().equals(idSeller)) {
+            throw new IllegalStateException("You do not have permission to edit this product.");
+        }
+
+        existingProduct.setProductName(requestDTO.getProductName());
+        existingProduct.setProductPrice(requestDTO.getProductPrice());
+        existingProduct.setOriginalPrice(requestDTO.getOriginalPrice());
+        existingProduct.setStockQuantity(requestDTO.getStockQuantity());
+
+        if (requestDTO.getIdCategory() != null) {
+            Category category = categoryRepository.findById(requestDTO.getIdCategory()).orElseThrow();
+            existingProduct.setCategory(category);
+        }
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            existingProduct.setProductImage(imageFile.getBytes());
+        }
+
+        productRepository.save(existingProduct);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProduct(Long idProduct, Long idSeller) {
+        Product existingProduct = productRepository.findById(idProduct)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
+        if (!existingProduct.getSeller().getIdSeller().equals(idSeller)) {
+            throw new IllegalStateException("You do not have permission to delete this product.");
+        }
+
+        productRepository.delete(existingProduct);
+    }
+
 }

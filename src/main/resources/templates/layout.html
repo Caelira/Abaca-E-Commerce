@@ -5,8 +5,8 @@
     <title>Shopee Clone</title>
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; display: flex; flex-direction: column; min-height: 100vh;}
-        .navbar { background-color: #ee4d2d; padding: 10px 0; color: white; display: flex; justify-content: space-around; align-items: center; }
-        .navbar-content { max-width: 1200px; width: 100%; display: flex; justify-content: space-between; margin: 0 auto; padding: 0 20px;}
+        .navbar { background-color: #ee4d2d; padding: 15px 0; color: white; display: flex; justify-content: space-around; align-items: center; }
+        .navbar-content { max-width: 1200px; width: 100%; display: flex; justify-content: space-between; align-items: center; margin: 0 auto; padding: 0 20px;}
         .navbar a { color: white; text-decoration: none; margin-left: 20px; font-size: 0.9em; }
         .navbar a:hover { opacity: 0.8; }
 
@@ -34,12 +34,21 @@
 <div class="navbar">
     <div class="navbar-content">
         <div style="display: flex; align-items: center;">
-            <a th:href="@{/}" style="font-size: 1.5em; font-weight: bold; margin-left: 0;">Shopee Clone</a>
+            <a th:href="@{/}" style="font-size: 1.8em; font-weight: bold; margin-left: 0; display: flex; align-items: center; gap: 10px;">
+                🛍️ Shopee Clone
+            </a>
         </div>
+
+        <form th:action="@{/search}" method="get" style="display: flex; flex: 1; max-width: 600px; margin: 0 40px; background: white; border-radius: 2px; padding: 2px;">
+            <input type="text" name="keyword" placeholder="Search for products, brands and shops" required style="flex: 1; padding: 10px; border: none; outline: none; border-radius: 2px 0 0 2px; color: #333;">
+            <button type="submit" style="background: #fb5533; border: none; padding: 0 25px; cursor: pointer; border-radius: 2px;">
+                <span style="color: white; font-size: 1.2em;">🔍</span>
+            </button>
+        </form>
+
         <div style="display: flex; align-items: center;">
             <a sec:authorize="isAuthenticated() and !hasRole('SELLER')" th:href="@{/start-selling}">Start Selling</a>
             <a sec:authorize="hasRole('SELLER')" th:href="@{/seller/dashboard}">Seller Centre</a>
-            <a href="#">Download</a>
 
             <span style="margin: 0 15px;">|</span>
 
@@ -49,10 +58,15 @@
                 </span>
 
             <span sec:authorize="isAuthenticated()" style="display: flex; align-items: center;">
-                    <a th:href="@{/cart}" style="margin-right: 20px; font-size: 1.2em;">🛒 <span th:if="${cartCount > 0}" th:text="${cartCount}" style="background: white; color: #ee4d2d; border-radius: 10px; padding: 2px 6px; font-size: 0.7em; vertical-align: top; margin-left: -5px;"></span></a>
-                    <span th:text="${currentUser.username}"></span>
+                    <a th:href="@{/cart}" style="margin-right: 20px; font-size: 1.4em; position: relative;">
+                        🛒
+                        <span th:if="${cartCount > 0}" th:text="${cartCount}" style="position: absolute; top: -5px; right: -10px; background: white; color: #ee4d2d; border-radius: 10px; padding: 2px 6px; font-size: 0.6em; font-weight: bold;"></span>
+                    </a>
+
+                    <a th:href="@{/buyer/purchases}" style="color: white; text-decoration: none; font-weight: bold;" th:text="${currentUser.username}"></a>
+
                     <form th:action="@{/logout}" method="post" style="display:inline;">
-                        <button type="submit" style="background:none; border:none; color:white; cursor:pointer; margin-left: 15px; font-size: 0.9em;">Logout</button>
+                        <button type="submit" style="background:none; border:none; color:white; cursor:pointer; margin-left: 15px; font-size: 0.9em; opacity: 0.8;">Logout</button>
                     </form>
                 </span>
         </div>
@@ -94,36 +108,24 @@
                 <li><a href="#">Help Centre</a></li>
                 <li><a href="#">Shopee Cares PH</a></li>
                 <li><a href="#">Payment Methods</a></li>
-                <li><a href="#">ShopeePay</a></li>
                 <li><a href="#">Order Tracking</a></li>
-                <li><a href="#">Free Shipping</a></li>
                 <li><a href="#">Return & Refund</a></li>
-                <li><a href="#">Contact Us</a></li>
             </ul>
         </div>
         <div>
             <h3>ABOUT SHOPEE</h3>
             <ul>
                 <li><a href="#">About Us</a></li>
-                <li><a href="#">Shopee Careers</a></li>
                 <li><a href="#">Shopee Policies</a></li>
                 <li><a href="#">Privacy Policy</a></li>
                 <li><a href="#">Seller Centre</a></li>
-                <li><a href="#">Flash Deals</a></li>
             </ul>
         </div>
         <div>
             <h3>PAYMENT</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                 <div style="width: 50px; height: 30px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 30px;">VISA</div>
-                <div style="width: 50px; height: 30px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 30px;">MC</div>
-                <div style="width: 50px; height: 30px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 30px;">JCB</div>
                 <div style="width: 50px; height: 30px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 30px;">COD</div>
-            </div>
-            <h3 style="margin-top: 20px;">LOGISTICS</h3>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                <div style="width: 50px; height: 30px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 30px; font-size: 10px;">SPX</div>
-                <div style="width: 50px; height: 30px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 30px; font-size: 10px;">J&T</div>
             </div>
         </div>
         <div>
@@ -132,17 +134,12 @@
                 <li><a href="#">📘 Facebook</a></li>
                 <li><a href="#">📸 Instagram</a></li>
                 <li><a href="#">🐦 Twitter</a></li>
-                <li><a href="#">💼 LinkedIn</a></li>
             </ul>
         </div>
         <div>
-            <h3>SHOPEE APP DOWNLOAD</h3>
+            <h3>SHOPEE APP</h3>
             <div style="display: flex; gap: 10px;">
                 <div style="width: 80px; height: 80px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 80px; font-size: 10px;">QR CODE</div>
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <div style="width: 100px; height: 25px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 25px; font-size: 10px;">App Store</div>
-                    <div style="width: 100px; height: 25px; background: #fff; border: 1px solid #ddd; text-align: center; line-height: 25px; font-size: 10px;">Google Play</div>
-                </div>
             </div>
         </div>
     </div>

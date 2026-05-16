@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main style="max-width: 1200px; margin: 20px auto;">
+
+    <div style="background: white; padding: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <span style="font-size: 1.2em;">Search results for '</span><strong style="color: #ee4d2d; font-size: 1.2em;" th:text="${keyword}"></strong><span style="font-size: 1.2em;">'</span>
+    </div>
+
+    <div th:if="${#lists.isEmpty(products)}" style="background: white; padding: 100px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <div style="font-size: 4em; margin-bottom: 20px;">🔍</div>
+        <h3 style="color: #888;">No products found matching your search.</h3>
+        <p style="color: #aaa;">Try using different keywords or checking for typos.</p>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(products)}" style="display: flex; flex-wrap: wrap; gap: 10px;" id="product-grid">
+        <div th:each="product : ${products}" style="background: white; width: calc(16.66% - 10px); transition: transform 0.2s; border: 1px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <a th:href="@{/products/{id}(id=${product.idProduct})}" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+                <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover;">
+                <div style="padding: 10px;">
+                    <h4 th:text="${product.productName}" style="font-size: 12px; font-weight: normal; margin: 0 0 10px 0; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: #333;"></h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="color: #ee4d2d; font-size: 1.1em;">₱<span th:text="${product.productPrice}"></span></div>
+                        <div style="font-size: 0.75em; color: #757575;"><span th:text="${product.totalSold}"></span> sold</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

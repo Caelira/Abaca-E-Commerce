@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     List<OrderItem> findAllByOrderHead_IdOrder(Long idOrder);
+    List<OrderItem> findByProduct_Seller_IdSellerOrderByOrderHead_OrderDateDesc(Long idSeller);
 }

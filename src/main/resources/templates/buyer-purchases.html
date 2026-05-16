@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main style="max-width: 1200px; margin: 20px auto; display: flex; gap: 20px;">
+
+    <div style="width: 200px; height: fit-content;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <div style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 1.5em; color: white; font-weight: bold;" th:text="${#strings.substring(currentUser.username,0,1).toUpperCase()}"></div>
+            <div>
+                <div style="font-weight: bold; color: #333;" th:text="${currentUser.username}"></div>
+                <div style="font-size: 0.8em; color: #888;">✎ Edit Profile</div>
+            </div>
+        </div>
+        <ul style="list-style: none; padding: 0; line-height: 2.5; margin: 0;">
+            <li><a href="#" style="text-decoration: none; color: #555; font-weight: bold;">👤 My Account</a></li>
+            <li><a th:href="@{/buyer/purchases}" style="text-decoration: none; color: #ee4d2d; font-weight: bold;">📝 My Purchases</a></li>
+            <li><a href="#" style="text-decoration: none; color: #555; font-weight: bold;">🔔 Notifications</a></li>
+        </ul>
+    </div>
+
+    <div style="flex: 1;">
+
+        <div th:if="${#lists.isEmpty(orders)}" style="background: white; padding: 100px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size: 3em; margin-bottom: 10px;">🛒</div>
+            <div style="color: #888; font-size: 1.2em;">No orders yet</div>
+        </div>
+
+        <div th:each="order : ${orders}" style="background: white; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: bold; color: #333;">Order <span th:text="'#' + ${order.idOrder}"></span></div>
+                <div style="color: #ee4d2d; font-weight: bold; text-transform: uppercase;" th:text="${order.orderStatus}"></div>
+            </div>
+
+            <div th:each="item : ${orderItemsMap.get(order.idOrder)}" style="padding: 20px; display: flex; border-bottom: 1px dashed #eee;">
+                <img th:src="@{/products/image/{id}(id=${item.product.idProduct})}" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; margin-right: 15px;">
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="font-weight: bold; color: #333; font-size: 1.1em;" th:text="${item.product.productName}"></div>
+                    <div style="color: #888; margin-top: 5px;">x<span th:text="${item.orderQuantity}"></span></div>
+                </div>
+                <div style="color: #ee4d2d; font-weight: bold; display: flex; align-items: center; font-size: 1.1em;">
+                    ₱<span th:text="${item.finalUnitPrice * item.orderQuantity}"></span>
+                </div>
+            </div>
+
+            <div style="padding: 20px; background: #fffaf9; display: flex; justify-content: flex-end; align-items: center; gap: 20px;">
+                <div style="color: #555;">Order Total:
+                    <span style="color: #ee4d2d; font-size: 1.5em; font-weight: bold; margin-left: 10px;">
+                            ₱<span th:text="${#aggregates.sum(orderItemsMap.get(order.idOrder).![finalUnitPrice * orderQuantity]) + 50.00}"></span>
+                        </span>
+                </div>
+                <a th:href="@{/buyer/orders/{id}(id=${order.idOrder})}" style="background: #ee4d2d; color: white; padding: 10px 30px; text-decoration: none; border-radius: 2px; font-weight: bold;">View Details</a>
+            </div>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

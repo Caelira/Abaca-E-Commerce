@@ -76,4 +76,13 @@ public class CartController {
             return "redirect:/products/" + productId + "?error=" + e.getMessage();
         }
     }
+    @PostMapping("/remove")
+    public String removeCartItem(@RequestParam("cartItemId") Long cartItemId, @AuthenticationPrincipal CustomUserDetails user) {
+        cartItemRepository.findById(cartItemId).ifPresent(item -> {
+            if (item.getCartHead().getBuyer().getUserAccount().getIdUser().equals(user.getIdUser())) {
+                cartItemRepository.delete(item);
+            }
+        });
+        return "redirect:/cart";
+    }
 }
