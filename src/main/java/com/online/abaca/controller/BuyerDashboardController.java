@@ -69,7 +69,7 @@ public class BuyerDashboardController {
 
         Map<Long, List<OrderItem>> orderItemsMap = new HashMap<>();
         for (OrderHead order : orders) {
-            orderItemsMap.put(order.getIdOrder(), orderItemRepository.findAllByOrderHead_IdOrder(order.getIdOrder()));
+           orderItemsMap.put(order.getIdOrder(), orderItemRepository.findAllByOrderHead_IdOrder(order.getIdOrder()));
         }
 
         model.addAttribute("orders", orders);

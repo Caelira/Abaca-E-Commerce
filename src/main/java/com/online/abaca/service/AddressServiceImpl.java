@@ -112,7 +112,6 @@ public class AddressServiceImpl implements AddressService {
         }
 
         addressMapper.updateEntityFromDTO(requestDTO, existingAddress);
-
         Address updatedAddress = addressRepository.save(existingAddress);
         return addressMapper.toResponseDTO(updatedAddress);
     }

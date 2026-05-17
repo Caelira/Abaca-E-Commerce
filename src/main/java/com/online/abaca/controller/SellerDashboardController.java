@@ -14,6 +14,7 @@ import com.online.abaca.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/seller")
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SellerDashboardController {
 
     private final ProductService productService;
@@ -36,20 +38,25 @@ public class SellerDashboardController {
                 .orElseThrow(() -> new RuntimeException("Seller profile not found"));
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CustomUserDetails user, Model model) {
-        Seller seller = getCurrentSeller(user);
+        Seller seller = sellerRepository.findByUserAccount_IdUser(user.getIdUser()).orElse(null);
+        if (seller == null) {
+            return "redirect:/start-selling";
+        }
+
+        List<OrderItem> items = orderItemRepository.findByProduct_Seller_IdSellerOrderByOrderHead_OrderDateDesc(seller.getIdSeller());
+
+        BigDecimal totalSales = items.stream()
+                .filter(item -> "COMPLETED".equals(item.getOrderHead().getOrderStatus()))
+                .map(item -> item.getFinalUnitPrice().multiply(new java.math.BigDecimal(item.getOrderQuantity())))
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+
         model.addAttribute("seller", seller);
-
-        List<OrderItem> orders = orderItemRepository.findByProduct_Seller_IdSellerOrderByOrderHead_OrderDateDesc(seller.getIdSeller());
-
-         long totalOrders = orders.size();
-        BigDecimal totalSales = orders.stream()
-                .map(item -> item.getFinalUnitPrice().multiply(new BigDecimal(item.getOrderQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("items", items);
         model.addAttribute("totalSales", totalSales);
+        model.addAttribute("totalOrders", items.size());
 
         return "seller-dashboard";
     }

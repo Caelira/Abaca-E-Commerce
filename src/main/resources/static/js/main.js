@@ -10,13 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // URL Notification Interceptor
     const urlParams = new URLSearchParams(window.location.search);
     let paramFound = false;
 
     if (urlParams.has('registered')) {
         showNotification('Account created successfully! Please log in.', 'success');
         paramFound = true;
+        openLoginModal();
     }
     if (urlParams.has('added')) {
         showNotification('Item added to your shopping cart!', 'success');
@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
         showNotification('Order placed successfully! Thank you.', 'success');
         paramFound = true;
     }
+
     if (urlParams.has('error')) {
         let errorMsg = urlParams.get('error');
         if (errorMsg === 'true' || errorMsg === '') {
@@ -41,9 +42,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         showNotification(errorMsg, 'error');
         paramFound = true;
+
+        if (errorMsg.includes('registered') || errorMsg.includes('Password must be')) {
+            openSignupModal();
+        } else if (errorMsg.includes('Invalid email or password')) {
+            openLoginModal();
+        }
     }
 
-    // Clean the URL so notifications don't fire again on refresh
     if (paramFound) {
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
@@ -76,9 +82,6 @@ function showNotification(message, type = 'success') {
     }, 3500);
 }
 
-// ----------------------------------------------------
-// THE FIX: HTML Fragment Fetch Logic
-// ----------------------------------------------------
 let homeFeedPage = 1;
 
 function loadNextProductBatch() {
@@ -88,38 +91,31 @@ function loadNextProductBatch() {
         button.disabled = true;
         button.style.opacity = '0.7';
     }
-
-    // Fetch the HTML Fragment from the Controller
-    fetch(`/products/feed?page=${homeFeedPage}`)
+fetch(`/products/feed?page=${homeFeedPage}`)
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
-            return response.text(); // Parse as Text/HTML, NOT JSON
+            return response.text();
         })
         .then(htmlFragment => {
-            // If the fragment is tiny, it means there are no more products
             if (htmlFragment.trim().length < 20) {
                 if (button) button.style.display = 'none';
                 return;
             }
 
-            // Append the HTML fragment directly into the Grid
             const grid = document.getElementById('productGrid');
             if (grid) {
                 grid.insertAdjacentHTML('beforeend', htmlFragment);
             }
 
-            // Successfully loaded, queue up the next page
             homeFeedPage++;
 
-            // Re-apply the VanillaTilt 3D effect ONLY to the newly injected cards
             if (typeof VanillaTilt !== 'undefined') {
                 VanillaTilt.init(document.querySelectorAll("#productGrid .product-card:not(.js-tilt)"), {
                     max: 12, speed: 400, glare: true, "max-glare": 0.15, scale: 1.02
                 });
             }
 
-            // Restore button state
-            if (button) {
+             if (button) {
                 button.innerText = 'Load More';
                 button.disabled = false;
                 button.style.opacity = '1';
@@ -135,9 +131,6 @@ function loadNextProductBatch() {
         });
 }
 
-// ----------------------------------------------------
-// Modal Controls
-// ----------------------------------------------------
 function openLoginModal() {
     closeSignupModal();
     const modal = document.getElementById('authLoginModal');
@@ -160,7 +153,6 @@ function closeSignupModal() {
     if (modal) modal.style.display = 'none';
 }
 
-// Close modals when clicking on the dark background mask
 window.addEventListener('click', function(event) {
     const loginM = document.getElementById('authLoginModal');
     const signupM = document.getElementById('authSignupModal');
