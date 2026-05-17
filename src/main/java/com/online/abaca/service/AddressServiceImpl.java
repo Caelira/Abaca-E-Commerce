@@ -23,7 +23,6 @@ public class AddressServiceImpl implements AddressService {
     private final UserAccountRepository userAccountRepository;
     private final AddressMapper addressMapper;
 
-
     @Override
     @Transactional(readOnly = true)
     public List<AddressResponseDTO> getAddressesByUserId(Long idUser) {
@@ -49,7 +48,7 @@ public class AddressServiceImpl implements AddressService {
         Address existingAddress = addressRepository.findById(idAddress)
                 .orElseThrow(() -> new EntityNotFoundException("Address not found"));
 
-         if (!existingAddress.getUserAccount().getIdUser().equals(idUser)) {
+        if (!existingAddress.getUserAccount().getIdUser().equals(idUser)) {
             throw new SecurityException("Unauthorized to edit this address");
         }
 
@@ -70,9 +69,6 @@ public class AddressServiceImpl implements AddressService {
 
         addressRepository.delete(existingAddress);
     }
-
-
-
 
     @Override
     @Transactional

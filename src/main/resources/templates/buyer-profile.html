@@ -1,44 +1,49 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main style="max-width: 1200px; margin: 20px auto; display: flex; gap: 20px;">
+<main class="main-container" style="display: flex; gap: 30px;">
 
-    <div style="width: 200px; height: fit-content;">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-            <div style="width: 50px; height: 50px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-size: 1.5em; color: white; font-weight: bold;" th:text="${#strings.substring(currentUser.username,0,1).toUpperCase()}"></div>
+    <div style="width: 250px; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+
+            <img th:if="${currentUser.hasProfileImage()}" th:src="@{/account/profile-image/{id}(id=${currentUser.idUser})}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; box-shadow: var(--shadow-sm);">
+            <div th:unless="${currentUser.hasProfileImage()}" style="width: 50px; height: 50px; border-radius: 50%; background: var(--theme-color); display: flex; align-items: center; justify-content: center; font-size: 1.5em; color: white; font-weight: bold; box-shadow: var(--shadow-sm);" th:text="${#strings.substring(currentUser.fullName != null ? currentUser.fullName : currentUser.username, 0, 1).toUpperCase()}"></div>
+
             <div>
-                <div style="font-weight: bold; color: #333;" th:text="${currentUser.username}"></div>
+                <div style="font-weight: bold; color: var(--text-main);" th:text="${currentUser.fullName != null ? currentUser.fullName : currentUser.username}"></div>
+                <a th:href="@{/account/settings}" style="font-size: 0.85em; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.3s;">✎ Edit Profile</a>
             </div>
         </div>
         <ul style="list-style: none; padding: 0; line-height: 2.5; margin: 0;">
-            <li><a th:href="@{/buyer/profile}" style="text-decoration: none; color: #ee4d2d; font-weight: bold;">👤 My Account</a></li>
-            <li><a th:href="@{/buyer/purchases}" style="text-decoration: none; color: #555;">📝 My Purchases</a></li>
+            <li><a th:href="@{/buyer/profile}" style="text-decoration: none; color: var(--theme-color); font-weight: bold; display: flex; align-items: center; gap: 10px;">My Profile</a></li>
+            <li><a th:href="@{/profile/addresses}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Addresses</a></li>
+            <li><a th:href="@{/buyer/purchases}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Purchases</a></li>
         </ul>
     </div>
 
-    <div style="flex: 1; background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h2 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 20px; color: #333;">My Profile</h2>
-        <p style="color: #666; margin-bottom: 30px;">Manage and protect your account</p>
+    <div style="flex: 1; background: var(--card-bg); padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; color: var(--text-main);">My Profile</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-weight: 500;">Manage your buyer details.</p>
 
-        <div th:if="${param.success}" style="color: #2e7d32; background: #e8f5e9; padding: 10px; margin-bottom: 20px; border: 1px solid #4caf50;">Profile updated successfully!</div>
+        <div th:if="${param.success}" style="color: #2e7d32; background: #e8f5e9; padding: 15px; margin-bottom: 30px; border-radius: 8px; font-weight: 600;">Profile updated successfully!</div>
 
         <form th:action="@{/buyer/profile/update}" method="post" style="max-width: 500px;">
-            <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                <div style="width: 150px; color: #666; text-align: right; padding-right: 20px;">Email</div>
-                <div style="flex: 1; font-weight: bold;" th:text="${currentUser.username}"></div>
+            <div style="display: flex; align-items: center; margin-bottom: 25px;">
+                <div style="width: 150px; color: var(--text-muted); font-weight: 600;">Email</div>
+                <div style="flex: 1; font-weight: bold; color: var(--text-main);" th:text="${currentUser.username}"></div>
             </div>
 
-            <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                <div style="width: 150px; color: #666; text-align: right; padding-right: 20px;">Phone Number</div>
+            <div style="display: flex; align-items: center; margin-bottom: 30px;">
+                <div style="width: 150px; color: var(--text-muted); font-weight: 600;">Phone Number</div>
                 <div style="flex: 1;">
-                    <input type="text" name="contactNumber" th:value="${buyer.contactNumber}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none;">
+                    <input type="text" name="contactNumber" th:value="${buyer.contactNumber}" class="form-control" required>
                 </div>
             </div>
 
             <div style="display: flex; align-items: center;">
-                <div style="width: 150px; padding-right: 20px;"></div>
+                <div style="width: 150px;"></div>
                 <div style="flex: 1;">
-                    <button type="submit" style="background: #ee4d2d; color: white; border: none; padding: 10px 30px; font-weight: bold; cursor: pointer; border-radius: 2px;">Save</button>
+                    <button type="submit" class="btn-theme" style="width: auto; padding: 12px 40px;">Save Changes</button>
                 </div>
             </div>
         </form>

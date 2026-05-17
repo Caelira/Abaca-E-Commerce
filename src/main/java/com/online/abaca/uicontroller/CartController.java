@@ -13,8 +13,10 @@ import com.online.abaca.userdetails.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping("/cart")
+@PreAuthorize("hasRole('BUYER')")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -34,6 +37,7 @@ public class CartController {
     private final ProductService productService;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public String viewCart(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         Buyer buyer = buyerRepository.findByUserAccount_IdUser(user.getIdUser())
                 .orElseThrow(() -> new RuntimeException("Buyer profile not found"));

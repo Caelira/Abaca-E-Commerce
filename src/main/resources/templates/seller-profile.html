@@ -1,37 +1,39 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main style="max-width: 1200px; margin: 20px auto; display: flex; gap: 20px;">
+<main class="main-container" style="display: flex; gap: 30px;">
 
-    <div style="width: 250px; background: white; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); height: fit-content;">
-        <h3 style="color: #333; margin-top: 0;">Seller Centre</h3>
-        <ul style="list-style: none; padding: 0; line-height: 2.5;">
-            <li><a th:href="@{/seller/dashboard}" style="text-decoration: none; color: #555;">Dashboard</a></li>
-            <li><a th:href="@{/seller/orders}" style="text-decoration: none; color: #555;">My Orders</a></li>
-            <li><a th:href="@{/seller/products}" style="text-decoration: none; color: #555;">My Products</a></li>
-            <li><a th:href="@{/seller/profile}" style="text-decoration: none; color: #ee4d2d; font-weight: bold;">Shop Profile</a></li>
-        </ul>
+    <div style="width: 250px; flex-shrink: 0;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+            <h3 style="color: var(--text-main); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">Seller Hub</h3>
+            <ul style="list-style: none; padding: 0; line-height: 2.5; margin: 0;">
+                <li><a th:href="@{/seller/dashboard}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Dashboard</a></li>
+                <li><a th:href="@{/seller/orders}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">My Orders</a></li>
+                <li><a th:href="@{/seller/products}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">My Products</a></li>
+                <li><a th:href="@{/seller/profile}" style="text-decoration: none; color: var(--theme-color); font-weight: bold; display: flex; align-items: center; gap: 10px;">Shop Profile</a></li>
+            </ul>
+        </div>
     </div>
 
-    <div style="flex: 1; background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h2 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 20px; color: #333;">Shop Settings</h2>
+    <div style="flex: 1; background: var(--card-bg); padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; color: var(--text-main);">Shop Settings</h2>
 
-        <div th:if="${param.success}" style="color: #2e7d32; background: #e8f5e9; padding: 10px; margin-bottom: 20px; border: 1px solid #4caf50;">Shop details updated successfully!</div>
+        <div th:if="${param.success}" style="color: #2e7d32; background: #e8f5e9; padding: 15px; margin-bottom: 25px; border-radius: 8px; font-weight: 600;">Shop details updated successfully!</div>
 
-        <form th:action="@{/seller/profile/update}" method="post" style="max-width: 500px; margin-top: 20px;">
+        <form th:action="@{/seller/profile/update}" method="post" style="max-width: 500px; margin-top: 30px;">
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Store Name</label>
-                <input type="text" name="storeName" th:value="${seller.storeName}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none; box-sizing: border-box;">
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Store Name</label>
+                <input type="text" name="storeName" th:value="${seller.storeName}" class="form-control" required>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Shop Contact Number</label>
-                <input type="text" name="contactNumber" th:value="${seller.contactNumber}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none; box-sizing: border-box;">
+            <div class="form-group" style="margin-bottom: 40px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Shop Contact Number</label>
+                <input type="text" name="contactNumber" th:value="${seller.contactNumber}" class="form-control" required>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
-                <button type="submit" style="background: #ee4d2d; color: white; border: none; padding: 12px 40px; cursor: pointer; font-weight: bold; border-radius: 2px;">Save Profile</button>
+                <button type="submit" class="btn-theme" style="width: auto; padding: 12px 40px;">Save Profile</button>
             </div>
         </form>
     </div>

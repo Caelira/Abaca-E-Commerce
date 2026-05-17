@@ -1,60 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main style="max-width: 1200px; margin: 20px auto; display: flex; gap: 20px;">
+<main class="main-container" style="display: flex; gap: 30px;">
 
-    <div style="width: 250px; background: white; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); height: fit-content;">
-        <h3 style="color: #333; margin-top: 0;">Seller Centre</h3>
-        <ul style="list-style: none; padding: 0; line-height: 2.5;">
-            <li><a th:href="@{/seller/dashboard}" style="text-decoration: none; color: #555;">Dashboard</a></li>
-            <li><a th:href="@{/seller/orders}" style="text-decoration: none; color: #555;">My Orders</a></li>
-            <li><a th:href="@{/seller/products}" style="text-decoration: none; color: #555;">My Products</a></li>
-            <li><a th:href="@{/seller/products/add}" style="text-decoration: none; color: #ee4d2d; font-weight: bold;">Add New Product</a></li>
-        </ul>
+    <div style="width: 250px; flex-shrink: 0;">
+        <div style="background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+            <h3 style="color: var(--text-main); margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">Seller Hub</h3>
+            <ul style="list-style: none; padding: 0; line-height: 2.5; margin: 0;">
+                <li><a th:href="@{/seller/dashboard}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Dashboard</a></li>
+                <li><a th:href="@{/seller/orders}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">My Orders</a></li>
+                <li><a th:href="@{/seller/products}" style="text-decoration: none; color: var(--theme-color); font-weight: bold; display: flex; align-items: center; gap: 10px;">My Products</a></li>
+                <li><a th:href="@{/seller/profile}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Shop Profile</a></li>
+            </ul>
+        </div>
     </div>
 
-    <div style="flex: 1; background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <h2 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 20px; color: #333;">Add New Product</h2>
+    <div style="flex: 1; background: var(--card-bg); padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; color: var(--text-main);">Add New Product</h2>
 
-        <form th:action="@{/seller/products/add}" method="post" enctype="multipart/form-data" style="max-width: 600px; margin-top: 20px;">
+        <form th:action="@{/seller/products/add}" method="post" enctype="multipart/form-data" style="max-width: 700px; margin-top: 30px;">
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Product Images</label>
-                <input type="file" name="imageFile" accept="image/*" required style="width: 100%; padding: 10px; border: 1px dashed #ccc; background: #fafafa;">
+            <div class="form-group" style="background: var(--body-bg); padding: 25px; border-radius: 12px; border: 1px dashed var(--border-color); margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 15px; color: var(--text-main); font-weight: 700; font-size: 1.1em;">Product Image</label>
+                <input type="file" name="imageFile" accept="image/*" required style="width: 100%; font-family: inherit;">
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Product Name</label>
-                <input type="text" name="productName" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none; box-sizing: border-box;">
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Product Name</label>
+                <input type="text" name="productName" class="form-control" required>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Category</label>
-                <select name="idCategory" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none;">
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Material Category</label>
+                <select name="idCategory" class="form-control" required>
                     <option value="" disabled selected>Select Category</option>
                     <option th:each="cat : ${categories}" th:value="${cat.idCategory}" th:text="${cat.categoryName}"></option>
                 </select>
             </div>
 
             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-                <div style="flex: 1;">
-                    <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Price (₱)</label>
-                    <input type="number" step="0.01" name="productPrice" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none; box-sizing: border-box;">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Price (₱)</label>
+                    <input type="number" step="0.01" name="productPrice" class="form-control" required>
                 </div>
-                <div style="flex: 1;">
-                    <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Original Price Discount</label>
-                    <input type="number" step="0.01" name="originalPrice" style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none; box-sizing: border-box;">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Original Price Discount</label>
+                    <input type="number" step="0.01" name="originalPrice" class="form-control" placeholder="Optional">
                 </div>
             </div>
 
-            <div style="margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: bold;">Available Stock</label>
-                <input type="number" name="stockQuantity" required style="width: 100%; padding: 10px; border: 1px solid #ccc; outline: none; box-sizing: border-box;">
+            <div class="form-group" style="margin-bottom: 40px;">
+                <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;">Available Stock</label>
+                <input type="number" name="stockQuantity" class="form-control" required>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                <a th:href="@{/seller/products}" style="background: white; border: 1px solid #ccc; padding: 12px 30px; text-decoration: none; color: #333; border-radius: 2px;">Cancel</a>
-                <button type="submit" style="background: #ee4d2d; color: white; border: none; padding: 12px 40px; cursor: pointer; font-weight: bold; border-radius: 2px;">Save & Publish</button>
+            <div style="display: flex; justify-content: flex-end; gap: 15px;">
+                <a th:href="@{/seller/products}" style="background: transparent; border: 1px solid var(--border-color); padding: 12px 30px; text-decoration: none; color: var(--text-muted); border-radius: 8px; font-weight: 600; transition: background 0.3s;">Cancel</a>
+                <button type="submit" class="btn-theme" style="width: auto; padding: 12px 40px;">Save & Publish</button>
             </div>
         </form>
     </div>

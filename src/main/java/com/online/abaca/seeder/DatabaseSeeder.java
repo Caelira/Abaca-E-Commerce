@@ -48,13 +48,13 @@ public class DatabaseSeeder {
             UserAccount sellerUser1 = new UserAccount();
             sellerUser1.setEmail("daraga.handicrafts@gmail.com");
             sellerUser1.setPassword(defaultPassword);
-            sellerUser1.setRole("SELLER");
+            sellerUser1.setRole("BUYER,SELLER");
             sellerUser1.setCreatedAt(LocalDateTime.now());
 
             UserAccount sellerUser2 = new UserAccount();
             sellerUser2.setEmail("camalig.weavers@yahoo.com");
             sellerUser2.setPassword(defaultPassword);
-            sellerUser2.setRole("SELLER");
+            sellerUser2.setRole("BUYER,SELLER");
             sellerUser2.setCreatedAt(LocalDateTime.now());
 
             UserAccount buyerUser1 = new UserAccount();
@@ -64,7 +64,6 @@ public class DatabaseSeeder {
             buyerUser1.setCreatedAt(LocalDateTime.now());
 
             userRepo.saveAll(List.of(sellerUser1, sellerUser2, buyerUser1));
-
             // --- ADDRESSES ---
             Address addr1 = new Address();
             addr1.setUserAccount(sellerUser1);
@@ -93,7 +92,21 @@ public class DatabaseSeeder {
             addressRepo.saveAll(List.of(addr1, addr2, addr3));
 
             // --- SELLERS & BUYERS ---
-            Seller seller1 = new Seller();
+            Buyer b1 = new Buyer();
+            b1.setUserAccount(sellerUser1);
+            b1.setContactNumber("09171234567");
+
+            Buyer b2 = new Buyer();
+            b2.setUserAccount(sellerUser2);
+            b2.setContactNumber("09189876543");
+
+            Buyer buyer1 = new Buyer();
+            buyer1.setUserAccount(buyerUser1);
+            buyer1.setContactNumber("09991112233");
+
+            buyerRepo.saveAll(List.of(b1, b2, buyer1));
+
+             Seller seller1 = new Seller();
             seller1.setUserAccount(sellerUser1);
             seller1.setStoreName("Daraga Native Handicrafts");
             seller1.setContactNumber("09171234567");
@@ -104,12 +117,6 @@ public class DatabaseSeeder {
             seller2.setContactNumber("09189876543");
 
             sellerRepo.saveAll(List.of(seller1, seller2));
-
-            Buyer buyer1 = new Buyer();
-            buyer1.setUserAccount(buyerUser1);
-            buyer1.setContactNumber("09991112233");
-
-            buyerRepo.save(buyer1);
 
             // --- CATEGORIES ---
             Category catRaw = new Category();

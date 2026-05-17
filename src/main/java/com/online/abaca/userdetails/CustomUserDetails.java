@@ -30,6 +30,10 @@ public class CustomUserDetails implements UserDetails {
                 .toList();
     }
 
+    public boolean hasProfileImage() {
+        return userAccount.getUserProfile() != null && userAccount.getUserProfile().length > 0;
+    }
+
     public String getFullName() {
         if (userAccount.getFullName() != null && !userAccount.getFullName().trim().isEmpty()) {
             return userAccount.getFullName();

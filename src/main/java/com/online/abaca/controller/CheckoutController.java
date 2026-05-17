@@ -16,6 +16,7 @@ import com.online.abaca.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,7 @@ public class CheckoutController {
     private final CartItemRepository cartItemRepository;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public String viewCheckout(
             @RequestParam(value = "addressId", required = false) Long addressId,
             @AuthenticationPrincipal CustomUserDetails user, Model model) {

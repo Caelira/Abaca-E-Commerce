@@ -1,94 +1,92 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main style="max-width: 1200px; margin: 20px auto;">
+<main class="main-container">
 
-    <h2 style="color: #ee4d2d; margin-bottom: 20px;">Checkout</h2>
+    <h2 style="color: var(--text-main); margin-bottom: 25px;">Checkout</h2>
 
-    <div style="background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; position: relative; overflow: hidden;">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 3px; background-image: repeating-linear-gradient(45deg, #ee4d2d, #ee4d2d 33px, transparent 0, transparent 41px, #5c87ff 0, #5c87ff 74px, transparent 0, transparent 82px);"></div>
-
-        <h3 style="color: #ee4d2d; display: flex; align-items: center; gap: 10px; margin-top: 0;">📍 Delivery Address</h3>
+    <div style="background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm); margin-bottom: 25px; border-top: 4px solid var(--theme-color);">
+        <h3 style="color: var(--theme-color); display: flex; align-items: center; gap: 10px; margin-top: 0; font-size: 1.2em;">📍 Delivery Address</h3>
 
         <div th:if="${#lists.isEmpty(addresses)}" style="text-align: center; padding: 20px;">
-            <p style="color: #666;">You don't have a delivery address yet.</p>
-            <button type="button" onclick="openAddressModal()" style="background: white; border: 1px solid #ee4d2d; color: #ee4d2d; padding: 10px 30px; font-weight: bold; cursor: pointer; border-radius: 2px;">+ Add New Address</button>
+            <p style="color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">You don't have a delivery address yet.</p>
+            <button type="button" onclick="openAddressModal()" class="btn-theme" style="width: auto; padding: 10px 30px; background: transparent; color: var(--theme-color); border: 2px solid var(--theme-color);">+ Add New Address</button>
         </div>
 
         <div th:if="${!#lists.isEmpty(addresses)}" style="display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; gap: 15px; font-size: 1.1em; color: #333;">
+            <div style="display: flex; gap: 15px; font-size: 1.05em; color: var(--text-main); align-items: center;">
                 <strong th:text="${currentUser.fullName}"></strong>
-                <span>
-                        <span th:text="${selectedAddress.street}"></span>,
-                        Brgy. <span th:text="${selectedAddress.brgy}"></span>,
-                        <span th:text="${selectedAddress.municipality}"></span>,
-                        <span th:text="${selectedAddress.province}"></span>
-                    </span>
-                <span style="border: 1px solid #ee4d2d; color: #ee4d2d; font-size: 0.7em; padding: 2px 5px; border-radius: 2px;" th:text="${selectedAddress.addressType}"></span>
+                <span th:if="${selectedAddress != null}" style="color: var(--text-muted);">
+                    <span th:text="${selectedAddress.street}"></span>,
+                    Brgy. <span th:text="${selectedAddress.brgy}"></span>,
+                    <span th:text="${selectedAddress.municipality}"></span>,
+                    <span th:text="${selectedAddress.province}"></span>
+                </span>
+                <span th:if="${selectedAddress != null}" style="border: 1px solid var(--theme-color); color: var(--theme-color); font-size: 0.7em; padding: 3px 8px; border-radius: 50px; font-weight: bold;" th:text="${selectedAddress.addressType}"></span>
             </div>
             <button type="button" onclick="document.getElementById('selectionModal').style.display='flex'" style="background: none; border: none; color: #2673dd; cursor: pointer; font-weight: bold; font-size: 1em;">CHANGE</button>
         </div>
     </div>
 
-    <div style="background: white; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px;">
-        <div style="display: flex; padding: 20px; border-bottom: 1px solid #eee; color: #888;">
-            <div style="width: 50%; font-weight: bold; color: #333;">Products Ordered</div>
+    <div style="background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-sm); margin-bottom: 25px; overflow: hidden;">
+        <div style="display: flex; padding: 20px; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-weight: 600; background: #fafafa;">
+            <div style="width: 50%;">Products Ordered</div>
             <div style="width: 15%; text-align: center;">Unit Price</div>
             <div style="width: 15%; text-align: center;">Quantity</div>
             <div style="width: 20%; text-align: right;">Item Subtotal</div>
         </div>
 
-        <div th:each="item : ${cartItems}" style="display: flex; padding: 20px; border-bottom: 1px dashed #eee; align-items: center;">
+        <div th:each="item : ${cartItems}" style="display: flex; padding: 25px 20px; border-bottom: 1px dashed var(--border-color); align-items: center;">
             <div style="width: 50%; display: flex; gap: 15px; align-items: center;">
-                <img th:src="@{/products/image/{id}(id=${item.product.idProduct})}" style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ddd;">
-                <span th:text="${item.product.productName}" style="color: #333;"></span>
+                <img th:src="@{/products/image/{id}(id=${item.product.idProduct})}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                <span th:text="${item.product.productName}" style="color: var(--text-main); font-weight: 600;"></span>
             </div>
-            <div style="width: 15%; text-align: center; color: #333;">₱<span th:text="${item.product.productPrice}"></span></div>
-            <div style="width: 15%; text-align: center; color: #333;" th:text="${item.quantity}"></div>
-            <div style="width: 20%; text-align: right; color: #333;">₱<span th:text="${item.product.productPrice * item.quantity}"></span></div>
+            <div style="width: 15%; text-align: center; color: var(--text-main); font-weight: 600;">₱<span th:text="${item.product.productPrice}"></span></div>
+            <div style="width: 15%; text-align: center; color: var(--text-muted); font-weight: 600;" th:text="${item.quantity}"></div>
+            <div style="width: 20%; text-align: right; color: var(--text-main); font-weight: 700;">₱<span th:text="${item.product.productPrice * item.quantity}"></span></div>
         </div>
 
-        <div style="display: flex; padding: 20px; background: #fafafa; border-bottom: 1px solid #eee; align-items: center;">
-            <div style="width: 50%; border-right: 1px dashed #ccc;">
+        <div style="display: flex; padding: 25px 20px; background: #fafafa; border-bottom: 1px solid var(--border-color); align-items: center;">
+            <div style="width: 50%; border-right: 1px dashed var(--border-color);">
                 <span style="color: #00bfa5; font-weight: bold;">Shipping Option:</span><br>
-                <span style="color: #333;">Standard Local</span>
+                <span style="color: var(--text-muted); font-weight: 500;">Standard Local</span>
             </div>
-            <div style="width: 50%; text-align: right; font-weight: bold; color: #333;">₱<span th:text="${shippingFee}"></span></div>
+            <div style="width: 50%; text-align: right; font-weight: bold; color: var(--text-main); font-size: 1.1em;">₱<span th:text="${shippingFee}"></span></div>
         </div>
 
-        <div style="text-align: right; padding: 20px; color: #888;">
-            Order Total (<span th:text="${#lists.size(cartItems)}"></span> item): <span style="color: #ee4d2d; font-size: 1.5em; font-weight: bold; margin-left: 10px;">₱<span th:text="${orderTotal}"></span></span>
+        <div style="text-align: right; padding: 25px 20px; color: var(--text-muted); font-weight: 600;">
+            Order Total (<span th:text="${#lists.size(cartItems)}"></span> item): <span style="color: var(--theme-color); font-size: 1.6em; font-weight: 800; margin-left: 10px;">₱<span th:text="${orderTotal}"></span></span>
         </div>
     </div>
 
-    <div style="background: white; padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-        <div style="display: flex; border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; align-items: center;">
-            <h3 style="margin: 0; width: 200px; color: #333;">Payment Method</h3>
-            <div style="display: flex; gap: 10px;">
-                <button type="button" style="border: 1px solid #ee4d2d; background: white; color: #ee4d2d; padding: 10px 20px; font-weight: bold; position: relative;">
+    <div style="background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+        <div style="display: flex; border-bottom: 1px solid var(--border-color); padding-bottom: 25px; margin-bottom: 25px; align-items: center;">
+            <h3 style="margin: 0; width: 200px; color: var(--text-main);">Payment Method</h3>
+            <div style="display: flex; gap: 15px;">
+                <button type="button" style="border: 2px solid var(--theme-color); background: rgba(255,100,49,0.05); color: var(--theme-color); padding: 10px 25px; font-weight: bold; border-radius: 8px; position: relative;">
                     Cash on Delivery
-                    <div style="position: absolute; bottom: 0; right: 0; width: 0; height: 0; border-bottom: 15px solid #ee4d2d; border-left: 15px solid transparent;"></div>
+                    <div style="position: absolute; top: -8px; right: -8px; background: var(--theme-color); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">✓</div>
                 </button>
             </div>
         </div>
 
-        <div style="background: #fafafa; padding: 20px; margin-top: 20px;">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-                <div style="width: 200px; color: #666;">Merchandise Subtotal:</div><div style="width: 100px; text-align: right;">₱<span th:text="${cartTotal}"></span></div>
+        <div style="background: var(--body-bg); padding: 30px; border-radius: 12px; margin-top: 20px;">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 12px; font-weight: 500;">
+                <div style="width: 200px; color: var(--text-muted);">Merchandise Subtotal:</div><div style="width: 120px; text-align: right; color: var(--text-main);">₱<span th:text="${cartTotal}"></span></div>
             </div>
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-                <div style="width: 200px; color: #666;">Shipping Total:</div><div style="width: 100px; text-align: right;">₱<span th:text="${shippingFee}"></span></div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 12px; font-weight: 500;">
+                <div style="width: 200px; color: var(--text-muted);">Shipping Total:</div><div style="width: 120px; text-align: right; color: var(--text-main);">₱<span th:text="${shippingFee}"></span></div>
             </div>
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px; align-items: center;">
-                <div style="width: 200px; color: #666;">Total Payment:</div>
-                <div style="width: 150px; text-align: right; color: #ee4d2d; font-size: 2em; font-weight: bold;">₱<span th:text="${orderTotal}"></span></div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 25px; align-items: center;">
+                <div style="width: 200px; color: var(--text-muted); font-weight: 600;">Total Payment:</div>
+                <div style="width: 150px; text-align: right; color: var(--theme-color); font-size: 2.2em; font-weight: 800;">₱<span th:text="${orderTotal}"></span></div>
             </div>
 
-            <div style="border-top: 1px dashed #ccc; padding-top: 20px; display: flex; justify-content: flex-end;">
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 25px; display: flex; justify-content: flex-end;">
                 <form th:action="@{/checkout/process}" method="post">
                     <input type="hidden" name="addressId" th:if="${!#lists.isEmpty(addresses)}" th:value="${selectedAddress.idAddress}">
                     <input type="hidden" name="paymentMethod" value="COD">
-                    <button type="submit" th:disabled="${#lists.isEmpty(addresses)}" th:style="${#lists.isEmpty(addresses) ? 'background: #ccc; cursor: not-allowed;' : 'background: #ee4d2d; cursor: pointer;'}" style="color: white; border: none; padding: 15px 50px; font-size: 1.1em; font-weight: bold; border-radius: 2px;">
+                    <button type="submit" th:disabled="${#lists.isEmpty(addresses)}" class="btn-theme" th:style="${#lists.isEmpty(addresses) ? 'background: #ccc; cursor: not-allowed; width: auto; padding: 15px 50px;' : 'width: auto; padding: 15px 50px; font-size: 1.1em;'}">
                         Place Order
                     </button>
                 </form>
@@ -96,89 +94,80 @@
         </div>
     </div>
 
-    <div id="selectionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: white; width: 500px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; margin: 5% auto;">
-            <div style="padding: 20px; border-bottom: 1px solid #eee; font-size: 1.2em; font-weight: bold;">My Addresses</div>
+    <div id="selectionModal" class="modal" style="display: none; align-items: center; justify-content: center;">
+        <div style="background: var(--card-bg); width: 550px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); display: flex; flex-direction: column; overflow: hidden; max-height: 80vh;">
+            <div style="padding: 25px; border-bottom: 1px solid var(--border-color); font-size: 1.2em; font-weight: bold; color: var(--text-main);">My Addresses</div>
 
-            <div style="max-height: 400px; overflow-y: auto; padding: 20px;">
-                <div th:each="addr : ${addresses}" style="display: flex; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+            <div style="overflow-y: auto; padding: 25px;">
+                <div th:each="addr : ${addresses}" style="display: flex; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px;">
 
-                    <div style="padding-top: 3px; margin-right: 15px;">
-                        <input type="radio" name="selectedAddr" th:value="${addr.idAddress}" th:checked="${selectedAddress != null and addr.idAddress == selectedAddress.idAddress}" style="cursor: pointer; transform: scale(1.2);">
+                    <div style="padding-top: 3px; margin-right: 20px;">
+                        <input type="radio" name="selectedAddr" th:value="${addr.idAddress}" th:checked="${selectedAddress != null and addr.idAddress == selectedAddress.idAddress}" style="cursor: pointer; transform: scale(1.3); accent-color: var(--theme-color);">
                     </div>
 
                     <div style="flex: 1;">
-                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 5px;">
-                            <strong th:text="${currentUser.fullName}"></strong>
-                            <span style="border: 1px solid #ee4d2d; color: #ee4d2d; font-size: 0.7em; padding: 2px 5px; border-radius: 2px;" th:text="${addr.addressType}"></span>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+                            <strong th:text="${currentUser.fullName}" style="color: var(--text-main);"></strong>
+                            <span style="background: rgba(255,100,49,0.1); color: var(--theme-color); font-size: 0.7em; padding: 3px 8px; border-radius: 50px; font-weight: bold;" th:text="${addr.addressType}"></span>
                         </div>
-                        <div style="color: #666; font-size: 0.9em; line-height: 1.5;">
+                        <div style="color: var(--text-muted); font-size: 0.95em; line-height: 1.5;">
                             <div th:text="${addr.street}"></div>
                             <div>Brgy. <span th:text="${addr.brgy}"></span>, <span th:text="${addr.municipality}"></span>, <span th:text="${addr.province}"></span></div>
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
-                        <button type="button"
-                                th:data-id="${addr.idAddress}"
-                                th:data-prov="${addr.province}"
-                                th:data-mun="${addr.municipality}"
-                                th:data-brgy="${addr.brgy}"
-                                th:data-street="${addr.street}"
-                                th:data-type="${addr.addressType}"
-                                onclick="openAddressModalFromBtn(this)"
-                                style="background: none; border: none; color: #2673dd; cursor: pointer; font-weight: bold;">Edit</button>
-
+                    <div style="display: flex; flex-direction: column; gap: 15px; align-items: flex-end;">
+                        <button type="button" th:data-id="${addr.idAddress}" th:data-prov="${addr.province}" th:data-mun="${addr.municipality}" th:data-brgy="${addr.brgy}" th:data-street="${addr.street}" th:data-type="${addr.addressType}" onclick="openAddressModalFromBtn(this)" style="background: none; border: none; color: #2673dd; cursor: pointer; font-weight: bold;">Edit</button>
                         <form th:action="@{/checkout/delete-address}" method="post">
                             <input type="hidden" name="addressId" th:value="${addr.idAddress}">
-                            <button type="submit" style="background: none; border: none; color: #888; cursor: pointer;">Delete</button>
+                            <button type="submit" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-weight: 600;">Delete</button>
                         </form>
                     </div>
                 </div>
 
-                <button type="button" onclick="openAddressModal()" style="width: 100%; background: white; border: 1px dashed #ccc; padding: 15px; color: #666; cursor: pointer; font-weight: bold;">+ Add New Address</button>
+                <button type="button" onclick="openAddressModal()" style="width: 100%; background: var(--body-bg); border: 1px dashed var(--border-color); border-radius: 8px; padding: 15px; color: var(--text-main); cursor: pointer; font-weight: bold; transition: background 0.3s;">+ Add New Address</button>
             </div>
 
-            <div style="padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 10px;">
-                <button type="button" onclick="document.getElementById('selectionModal').style.display='none'" style="background: white; border: 1px solid #ccc; padding: 10px 20px; cursor: pointer;">Cancel</button>
-                <button type="button" onclick="confirmAddressSelection()" style="background: #ee4d2d; color: white; border: none; padding: 10px 30px; cursor: pointer; border-radius: 2px;">Confirm</button>
+            <div style="padding: 20px 25px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 15px; background: #fafafa;">
+                <button type="button" onclick="document.getElementById('selectionModal').style.display='none'" style="background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 25px; cursor: pointer; font-weight: 600; color: var(--text-muted);">Cancel</button>
+                <button type="button" onclick="confirmAddressSelection()" class="btn-theme" style="width: auto; padding: 10px 30px;">Confirm</button>
             </div>
         </div>
     </div>
 
-    <div id="addressModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; align-items: center; justify-content: center;">
-        <div style="background: white; width: 500px; border-radius: 3px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; margin: 5% auto;">
-            <div id="addressModalTitle" style="padding: 20px; border-bottom: 1px solid #eee; font-size: 1.2em; font-weight: bold;">New Address</div>
+    <div id="addressModal" class="modal" style="display: none; align-items: center; justify-content: center;">
+        <div style="background: var(--card-bg); width: 500px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); display: flex; flex-direction: column; overflow: hidden;">
+            <div id="addressModalTitle" style="padding: 25px; border-bottom: 1px solid var(--border-color); font-size: 1.2em; font-weight: bold; color: var(--text-main);">New Address</div>
 
-            <form th:action="@{/checkout/save-address}" method="post" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+            <form th:action="@{/checkout/save-address}" method="post" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
                 <input type="hidden" name="idAddress" id="formIdAddress">
 
-                <select id="provinceSelect" name="province" required style="padding: 10px; border: 1px solid #ccc; outline: none;">
+                <select id="provinceSelect" name="province" class="form-control" required>
                     <option value="" disabled selected>Select Province</option>
                 </select>
-                <select id="municipalitySelect" name="municipality" required disabled style="padding: 10px; border: 1px solid #ccc; outline: none;">
+                <select id="municipalitySelect" name="municipality" class="form-control" required disabled>
                     <option value="" disabled selected>Select City, Municipality</option>
                 </select>
-                <select id="brgySelect" name="brgy" required disabled style="padding: 10px; border: 1px solid #ccc; outline: none;">
+                <select id="brgySelect" name="brgy" class="form-control" required disabled>
                     <option value="" disabled selected>Select Barangay</option>
                 </select>
-                <input type="text" id="streetInput" name="street" placeholder="Street Name, Building, House No." required style="padding: 10px; border: 1px solid #ccc; outline: none;">
+                <input type="text" id="streetInput" name="street" class="form-control" placeholder="Street Name, Building, House No." required>
 
                 <div>
-                    <label style="color: #888; font-size: 0.9em; display: block; margin-bottom: 5px;">Label As:</label>
-                    <div style="display: flex; gap: 10px;">
-                        <label class="type-label" style="border: 1px solid #ccc; padding: 5px 15px; border-radius: 20px; cursor: pointer; position: relative;">
+                    <label style="color: var(--text-muted); font-size: 0.9em; display: block; margin-bottom: 10px; font-weight: 600;">Label As:</label>
+                    <div style="display: flex; gap: 15px;">
+                        <label class="type-label" style="border: 1px solid var(--border-color); padding: 8px 25px; border-radius: 50px; cursor: pointer; position: relative; font-weight: 600; color: var(--text-main); transition: all 0.3s;">
                             <input type="radio" name="addressType" value="Home" required style="position: absolute; opacity: 0; width: 0; height: 0;"> Home
                         </label>
-                        <label class="type-label" style="border: 1px solid #ccc; padding: 5px 15px; border-radius: 20px; cursor: pointer; position: relative;">
+                        <label class="type-label" style="border: 1px solid var(--border-color); padding: 8px 25px; border-radius: 50px; cursor: pointer; position: relative; font-weight: 600; color: var(--text-main); transition: all 0.3s;">
                             <input type="radio" name="addressType" value="Work" required style="position: absolute; opacity: 0; width: 0; height: 0;"> Work
                         </label>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
-                    <button type="button" onclick="document.getElementById('addressModal').style.display='none'" style="background: white; border: none; color: #333; padding: 10px 20px; cursor: pointer;">Cancel</button>
-                    <button type="submit" style="background: #ee4d2d; border: none; color: white; padding: 10px 30px; cursor: pointer; border-radius: 2px;">Submit</button>
+                <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px;">
+                    <button type="button" onclick="document.getElementById('addressModal').style.display='none'" style="background: transparent; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 25px; cursor: pointer; font-weight: 600; color: var(--text-muted);">Cancel</button>
+                    <button type="submit" class="btn-theme" style="width: auto; padding: 10px 35px;">Submit</button>
                 </div>
             </form>
         </div>
@@ -186,11 +175,9 @@
 
     <script>
         const psgcBaseUrl = 'https://psgc.gitlab.io/api';
-
         const provinceSelect = document.getElementById('provinceSelect');
         const municipalitySelect = document.getElementById('municipalitySelect');
         const brgySelect = document.getElementById('brgySelect');
-
         let provincesLoaded = false;
 
         function formatLocationName(str) {
@@ -213,9 +200,7 @@
             try {
                 const response = await fetch(`${psgcBaseUrl}/provinces`);
                 const data = await response.json();
-
                 data.sort((a, b) => a.name.localeCompare(b.name));
-
                 data.forEach(prov => {
                     let cleanName = formatLocationName(prov.name);
                     let option = new Option(cleanName, cleanName);
@@ -223,21 +208,16 @@
                     provinceSelect.appendChild(option);
                 });
                 provincesLoaded = true;
-            } catch (error) {
-                console.error("Failed to load provinces", error);
-            }
+            } catch (error) { console.error("Failed to load provinces", error); }
         }
 
         async function loadMunicipalities(provCode) {
             municipalitySelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
             municipalitySelect.disabled = true;
-
             try {
                 const response = await fetch(`${psgcBaseUrl}/provinces/${provCode}/cities-municipalities`);
                 const data = await response.json();
-
                 data.sort((a, b) => a.name.localeCompare(b.name));
-
                 municipalitySelect.innerHTML = '<option value="" disabled selected>Select City, Municipality</option>';
                 data.forEach(mun => {
                     let cleanName = formatLocationName(mun.name);
@@ -246,30 +226,23 @@
                     municipalitySelect.appendChild(option);
                 });
                 municipalitySelect.disabled = false;
-            } catch (error) {
-                console.error("Failed to load municipalities", error);
-            }
+            } catch (error) { console.error("Failed to load municipalities", error); }
         }
 
         async function loadBarangays(munCode) {
             brgySelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
             brgySelect.disabled = true;
-
             try {
                 const response = await fetch(`${psgcBaseUrl}/cities-municipalities/${munCode}/barangays`);
                 const data = await response.json();
-
                 data.sort((a, b) => a.name.localeCompare(b.name));
-
                 brgySelect.innerHTML = '<option value="" disabled selected>Select Barangay</option>';
                 data.forEach(brgy => {
                     let cleanName = formatLocationName(brgy.name);
                     brgySelect.appendChild(new Option(cleanName, cleanName));
                 });
                 brgySelect.disabled = false;
-            } catch (error) {
-                console.error("Failed to load barangays", error);
-            }
+            } catch (error) { console.error("Failed to load barangays", error); }
         }
 
         provinceSelect.addEventListener('change', function() {
@@ -286,10 +259,15 @@
 
         document.querySelectorAll('input[name="addressType"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                document.querySelectorAll('.type-label').forEach(lbl => { lbl.style.borderColor = '#ccc'; lbl.style.color = '#333'; });
+                document.querySelectorAll('.type-label').forEach(lbl => {
+                    lbl.style.borderColor = 'var(--border-color)';
+                    lbl.style.color = 'var(--text-main)';
+                    lbl.style.background = 'transparent';
+                });
                 if(this.checked) {
-                    this.parentElement.style.borderColor = '#ee4d2d';
-                    this.parentElement.style.color = '#ee4d2d';
+                    this.parentElement.style.borderColor = 'var(--theme-color)';
+                    this.parentElement.style.color = 'var(--theme-color)';
+                    this.parentElement.style.background = 'rgba(255,100,49,0.05)';
                 }
             });
         });
@@ -320,15 +298,12 @@
             document.getElementById('formIdAddress').value = id;
             document.getElementById('streetInput').value = street;
 
-            if (!provincesLoaded) {
-                await loadProvinces();
-            }
+            if (!provincesLoaded) await loadProvinces();
 
             if(prov) {
                 const selectedProv = setSelectByText(provinceSelect, prov);
                 if (selectedProv && selectedProv.dataset.code) {
                     await loadMunicipalities(selectedProv.dataset.code);
-
                     const selectedMun = setSelectByText(municipalitySelect, mun);
                     if (selectedMun && selectedMun.dataset.code) {
                         await loadBarangays(selectedMun.dataset.code);

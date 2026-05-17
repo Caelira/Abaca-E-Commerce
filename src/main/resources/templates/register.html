@@ -1,43 +1,28 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
-<head>
-    <title>Sign Up</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<div layout:fragment="content">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card border-0 shadow-sm mt-5">
-                <div class="card-body p-5">
-                    <h3 class="text-center mb-4">Sign Up</h3>
+<main class="main-container" style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+    <div style="background: var(--card-bg); padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 400px;">
+        <h2 style="text-align: center; margin-top: 0; color: var(--text-main); margin-bottom: 30px;">Create Account</h2>
 
-                    <form th:action="@{/register}" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label">I want to register as a</label>
-                            <select name="role" class="form-select" required>
-                                <option value="BUYER">Buyer</option>
-                                <option value="SELLER">Seller</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn w-100 shopee-bg text-white mb-3">Sign Up</button>
-                    </form>
-                    <div class="text-center">
-                        <span class="text-muted">Already have an account?</span> <a th:href="@{/login}" class="shopee-text text-decoration-none">Login</a>
-                    </div>
-                </div>
+        <form th:action="@{/register}" method="post">
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Email</label>
+                <input type="email" name="email" class="form-control" required>
             </div>
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <input type="hidden" name="role" value="BUYER">
+
+            <button type="submit" class="btn-theme" style="margin-top: 10px;">Sign Up</button>
+        </form>
+        <div style="text-align: center; margin-top: 25px;">
+            <span style="color: var(--text-muted);">Already have an account?</span> <a th:href="@{/login}" style="color: var(--theme-color); font-weight: 700; text-decoration: none;">Login</a>
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>

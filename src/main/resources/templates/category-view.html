@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main>
-    <div style="background: white; padding: 20px; margin-bottom: 20px;">
-        <h2 th:text="${category.categoryName}" style="color: #ee4d2d; margin: 0 0 10px 0;"></h2>
-        <p th:text="${category.description}" style="color: #666; margin: 0;"></p>
+<main class="main-container">
+
+    <div style="background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm); margin-bottom: 30px; text-align: center;">
+        <h2 th:text="${category.categoryName}" style="color: var(--theme-color); margin-top: 0;"></h2>
+        <p th:text="${category.description}" class="text-muted" style="margin: 0;"></p>
     </div>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="product-grid">
-        <div th:each="product : ${products}" style="border: 1px solid #ccc; width: 200px; padding: 10px; background: white;">
-            <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; height: 150px; background: #eee; object-fit: cover;">
-            <h4 th:text="${product.productName}" style="font-size: 14px; height: 40px; overflow: hidden;"></h4>
+    <div th:if="${#lists.isEmpty(products)}" style="text-align: center; padding: 50px;">
+        <h3 class="text-muted">No products found in this category.</h3>
+    </div>
 
-            <div th:if="${product.originalPrice != null}" style="text-decoration: line-through; color: #888; font-size: 12px;">
-                ₱<span th:text="${product.originalPrice}"></span>
-            </div>
-            <div style="color: #ee4d2d; font-weight: bold; font-size: 1.2em;">
-                ₱<span th:text="${product.productPrice}"></span>
-            </div>
-
-            <div style="font-size: 0.8em; color: #555; margin-top: 5px;">
-                <span th:text="${product.totalSold}"></span> sold
-            </div>
-
-            <a th:href="@{/products/{id}(id=${product.idProduct})}" style="display: block; margin-top: 10px; text-align: center; text-decoration: none; color: white; background: #ee4d2d; padding: 8px;">View</a>
+    <div class="product-grid" id="productGrid" th:if="${!#lists.isEmpty(products)}">
+        <div th:each="product : ${products}" th:remove="tag">
+            <a th:href="@{/products/{id}(id=${product.idProduct})}" class="product-card" data-tilt data-tilt-max="7" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+                <div class="product-image-container">
+                    <img th:src="@{/products/image/{id}(id=${product.idProduct})}">
+                </div>
+                <div class="product-info">
+                    <h4 class="product-title" th:text="${product.productName}"></h4>
+                    <div class="price-row">
+                        <div>
+                            <span th:if="${product.originalPrice != null}" class="price-original" th:text="'₱' + ${product.originalPrice}"></span>
+                            <span class="price-current" th:text="'₱' + ${product.productPrice}"></span>
+                        </div>
+                        <span class="product-sold" th:text="${product.totalSold} + ' sold'"></span>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
+
 </main>
 </body>
 </html>

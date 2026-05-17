@@ -33,7 +33,12 @@ public class UserAccount {
     public String getFullName() {
         return fullName;
     }
-
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }

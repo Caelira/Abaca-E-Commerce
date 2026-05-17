@@ -10,10 +10,12 @@ public class ProductResponseDTO {
     private Long idSeller;
     private Long idCategory;
     private String productName;
+    private String storeName;
     private BigDecimal productPrice;
     private BigDecimal originalPrice;
     private Integer stockQuantity;
     private LocalDateTime createdAt;
     private Integer totalSold;
     private byte[] productImage;
+
 }

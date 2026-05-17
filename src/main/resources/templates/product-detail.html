@@ -1,75 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main style="max-width: 1200px; margin: 20px auto;">
+<main class="main-container">
 
-  <div style="background: white; padding: 20px; display: flex; gap: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 40px;">
-    <div style="width: 450px;">
-      <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; height: 450px; object-fit: cover; background: #eee; border: 1px solid #ddd;">
+  <div style="background: var(--card-bg); padding: 30px; border-radius: var(--border-radius); display: flex; gap: 40px; box-shadow: var(--shadow-sm); margin-bottom: 50px;">
+    <div style="width: 450px; flex-shrink: 0;">
+      <div style="border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+        <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; height: 450px; object-fit: cover; display: block;">
+      </div>
     </div>
 
-    <div style="flex: 1; padding: 10px;">
-      <h1 th:text="${product.productName}" style="margin-top: 0; font-size: 1.5em; color: #333;"></h1>
+    <div style="flex: 1; display: flex; flex-direction: column;">
+      <h1 th:text="${product.productName}" style="margin-top: 0; font-size: 1.8em; color: var(--text-main); font-weight: 700; line-height: 1.3;"></h1>
 
-      <div style="background: #fafafa; padding: 20px; margin-bottom: 20px; margin-top: 20px;">
-        <div th:if="${product.originalPrice != null}" style="text-decoration: line-through; color: #888; margin-bottom: 5px;">
+      <div style="background: var(--body-bg); padding: 25px; border-radius: 12px; margin-bottom: 25px; margin-top: 15px; border: 1px solid var(--border-color);">
+        <div th:if="${product.originalPrice != null}" style="text-decoration: line-through; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">
           ₱<span th:text="${product.originalPrice}"></span>
         </div>
-        <h2 style="color: #ee4d2d; margin: 0; font-size: 2.2em;">₱<span th:text="${product.productPrice}"></span></h2>
+        <h2 style="color: var(--theme-color); margin: 0; font-size: 2.5em; font-weight: 800;">₱<span th:text="${product.productPrice}"></span></h2>
       </div>
 
-      <p style="color: #666; display: flex; gap: 20px;">
-        <span>Stock: <strong th:text="${product.stockQuantity}"></strong></span>
-        <span>Sold: <strong th:text="${product.totalSold}"></strong></span>
+      <p style="color: var(--text-muted); display: flex; gap: 30px; font-size: 1.1em; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px;">
+        <span>Stock: <strong th:text="${product.stockQuantity}" style="color: var(--text-main);"></strong></span>
+        <span>Sold: <strong th:text="${product.totalSold}" style="color: var(--text-main);"></strong></span>
       </p>
 
-      <div sec:authorize="hasRole('BUYER')">
-        <form th:action="@{/cart/add}" method="post" style="margin-top: 30px;">
+      <div style="margin-bottom: 30px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; display: inline-flex; align-items: center; gap: 15px; background: #fafafa;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--theme-color); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+          <span th:text="${product.storeName != null ? #strings.substring(product.storeName, 0, 1).toUpperCase() : 'S'}"></span>
+        </div>
+        <div>
+          <div style="font-weight: 600; color: var(--text-main);" th:text="${product.storeName != null ? product.storeName : 'Unknown Shop'}"></div>
+          <a th:href="@{/shop/{id}(id=${product.idSeller})}" style="font-size: 0.85em; color: var(--theme-color); text-decoration: none; font-weight: 500;">View Shop →</a>
+        </div>
+      </div>
+
+      <div sec:authorize="isAuthenticated()" style="margin-top: auto;">
+        <form th:action="@{/cart/add}" method="post">
           <input type="hidden" name="productId" th:value="${product.idProduct}">
 
           <div style="display: flex; align-items: center; margin-bottom: 30px;">
-            <span style="color: #757575; width: 100px;">Quantity</span>
-            <div style="display: flex; border: 1px solid #ccc; background: white;">
-              <input type="number" name="quantity" value="1" min="1" th:max="${product.stockQuantity}" style="width: 60px; padding: 8px; border: none; outline: none; text-align: center;">
+            <span style="color: var(--text-muted); width: 100px; font-weight: 600;">Quantity</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <input type="number" name="quantity" value="1" min="1" th:max="${product.stockQuantity}" class="form-control" style="width: 80px; text-align: center; font-weight: bold; font-size: 1.1em;">
+              <span style="color: var(--text-muted); font-size: 0.9em;" th:text="${product.stockQuantity} + ' pieces available'"></span>
             </div>
-            <span style="color: #757575; margin-left: 15px;" th:text="${product.stockQuantity} + ' pieces available'"></span>
           </div>
 
-          <div style="display: flex; gap: 15px;">
-            <button type="submit" name="action" value="add" style="background: #ffeedb; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 12px 30px; cursor: pointer; font-size: 1em; display: flex; align-items: center; gap: 10px;">
+          <div style="display: flex; gap: 20px;">
+            <button type="submit" name="action" value="add" style="background: rgba(255,100,49,0.1); color: var(--theme-color); border: 2px solid var(--theme-color); padding: 15px 35px; border-radius: 8px; cursor: pointer; font-size: 1.05em; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: all 0.3s;">
               🛒 Add To Cart
             </button>
-            <button type="submit" name="action" value="buy" style="background: #ee4d2d; color: white; border: 1px solid #ee4d2d; padding: 12px 40px; cursor: pointer; font-size: 1em;">
+            <button type="submit" name="action" value="buy" class="btn-theme" style="width: auto; padding: 15px 50px; font-size: 1.05em;">
               Buy Now
             </button>
           </div>
         </form>
       </div>
 
-      <div sec:authorize="isAnonymous()">
-        <div style="margin-top: 30px; display: flex; gap: 15px;">
-          <button type="button" onclick="openModal('loginForm')" style="background: #ffeedb; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 12px 30px; cursor: pointer; font-size: 1em;">🛒 Add To Cart</button>
-          <button type="button" onclick="openModal('loginForm')" style="background: #ee4d2d; color: white; border: 1px solid #ee4d2d; padding: 12px 40px; cursor: pointer; font-size: 1em;">Buy Now</button>
+      <div sec:authorize="isAnonymous()" style="margin-top: auto;">
+        <div style="display: flex; gap: 20px;">
+          <button type="button" onclick="openModal('authModal')" style="background: rgba(255,100,49,0.1); color: var(--theme-color); border: 2px solid var(--theme-color); padding: 15px 35px; border-radius: 8px; cursor: pointer; font-size: 1.05em; font-weight: bold;">🛒 Add To Cart</button>
+          <button type="button" onclick="openModal('authModal')" class="btn-theme" style="width: auto; padding: 15px 50px; font-size: 1.05em;">Buy Now</button>
         </div>
       </div>
 
-      <div sec:authorize="hasRole('SELLER')">
-        <p style="color: #ee4d2d; margin-top: 30px; font-weight: bold;">Sellers cannot purchase items. Please log in with a Buyer account.</p>
-      </div>
     </div>
   </div>
 
   <div>
-    <div style="padding: 15px; background: white; margin-bottom: 2px; color: #888; font-weight: bold; text-transform: uppercase;">You May Also Like</div>
-    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;" id="product-grid">
-      <div th:each="recProduct : ${recommendedProducts}" style="background: white; transition: transform 0.2s;">
-        <a th:href="@{/products/{id}(id=${recProduct.idProduct})}" style="text-decoration: none; color: inherit; display: block; height: 100%;">
-          <img th:src="@{/products/image/{id}(id=${recProduct.idProduct})}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover;">
-          <div style="padding: 10px; border: 1px solid #eee; border-top: none;">
-            <h4 th:text="${recProduct.productName}" style="font-size: 12px; font-weight: normal; margin: 0 0 10px 0; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: #333;"></h4>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div style="color: #ee4d2d; font-size: 1.1em;">₱<span th:text="${recProduct.productPrice}"></span></div>
-              <div style="font-size: 0.75em; color: #757575;"><span th:text="${recProduct.totalSold}"></span> sold</div>
+    <h2 class="section-title">You May Also Like</h2>
+    <div class="product-grid" id="productGrid">
+      <div th:each="recProduct : ${recommendedProducts}" th:remove="tag">
+        <a th:href="@{/products/{id}(id=${recProduct.idProduct})}" class="product-card" data-tilt data-tilt-max="7" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+          <div class="product-image-container">
+            <img th:src="@{/products/image/{id}(id=${recProduct.idProduct})}">
+          </div>
+          <div class="product-info">
+            <h4 class="product-title" th:text="${recProduct.productName}"></h4>
+            <div class="price-row">
+              <div>
+                <span th:if="${recProduct.originalPrice != null}" class="price-original" th:text="'₱' + ${recProduct.originalPrice}"></span>
+                <span class="price-current" th:text="'₱' + ${recProduct.productPrice}"></span>
+              </div>
+              <span class="product-sold" th:text="${recProduct.totalSold} + ' sold'"></span>
             </div>
           </div>
         </a>

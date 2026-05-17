@@ -1,4 +1,5 @@
 package com.online.abaca.service;
+
 import com.online.abaca.dto.AddressRequestDTO;
 import com.online.abaca.dto.AddressResponseDTO;
 
@@ -12,6 +13,6 @@ public interface AddressService {
     void deleteAddress(Long idAddress);
     List<AddressResponseDTO> getAddressesByUserId(Long idUser);
     AddressResponseDTO createAddressForUser(Long idUser, AddressRequestDTO requestDTO);
-    AddressResponseDTO updateAddressForUser(Long idAddress, Long idUser, AddressRequestDTO requestDTO);
-    void deleteAddressForUser(Long idAddress, Long idUser);
+    AddressResponseDTO updateAddressForUser(Long idUser, Long idAddress, AddressRequestDTO requestDTO);
+    void deleteAddressForUser(Long idUser, Long idAddress);
 }

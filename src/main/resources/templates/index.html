@@ -1,34 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
 <body>
-<main>
-    <h2>Categories</h2>
-    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-        <div th:each="category : ${categories}" style="border: 1px solid #ccc; padding: 10px;">
-            <a th:href="@{/category/{id}(id=${category.idCategory})}" th:text="${category.categoryName}" style="text-decoration: none; color: black;"></a>
-        </div>
+<main class="main-container">
+
+    <h2 class="section-title">Explore Materials</h2>
+    <div class="category-flex">
+        <a th:each="category : ${categories}"
+           th:href="@{/category/{id}(id=${category.idCategory})}"
+           class="category-pill"
+           th:text="${category.categoryName}">
+        </a>
     </div>
 
-    <h2>Daily Discover</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 15px;" id="product-grid">
-        <div th:each="product : ${products}" style="border: 1px solid #ccc; width: 200px; padding: 10px; background: white;">
-            <img th:src="@{/products/image/{id}(id=${product.idProduct})}" style="width: 100%; height: 150px; background: #eee; object-fit: cover;">
-            <h4 th:text="${product.productName}" style="font-size: 14px; height: 40px; overflow: hidden;"></h4>
-
-            <div th:if="${product.originalPrice != null}" style="text-decoration: line-through; color: #888; font-size: 12px;">
-                ₱<span th:text="${product.originalPrice}"></span>
-            </div>
-            <div style="color: #ee4d2d; font-weight: bold; font-size: 1.2em;">
-                ₱<span th:text="${product.productPrice}"></span>
-            </div>
-
-            <div style="font-size: 0.8em; color: #555; margin-top: 5px;">
-                <span th:text="${product.totalSold}"></span> sold
-            </div>
-
-            <a th:href="@{/products/{id}(id=${product.idProduct})}" style="display: block; margin-top: 10px; text-align: center; text-decoration: none; color: white; background: #ee4d2d; padding: 8px;">View</a>
-        </div>
+    <h2 class="section-title">Daily Discoveries</h2>
+    <div class="product-grid" id="productGrid">
+        <div th:replace="~{fragments/product-cards :: productGrid}"></div>
     </div>
+
+    <div style="text-align: center; margin-top: 50px; margin-bottom: 20px;" id="loadMoreContainer">
+        <button id="loadMoreBtn" onclick="loadNextPage()" class="btn-theme" style="width: auto; padding: 15px 50px; border-radius: 50px; font-size: 1.1em; transition: all 0.3s; box-shadow: var(--shadow-sm);">
+            Load More Products
+        </button>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        let isLoading = false;
+
+        function loadNextPage() {
+            if(isLoading) return;
+            isLoading = true;
+            currentPage++;
+
+            const btn = document.getElementById('loadMoreBtn');
+            const originalText = btn.innerText;
+            btn.innerText = 'Loading...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            fetch(`/products/feed?page=${currentPage}`)
+                .then(response => response.text())
+                .then(htmlFragment => {
+                    if(htmlFragment.trim().length < 20) {
+                        document.getElementById('loadMoreContainer').style.display = 'none';
+                        return;
+                    }
+
+                    document.getElementById('productGrid').insertAdjacentHTML('beforeend', htmlFragment);
+
+                    if (typeof VanillaTilt !== 'undefined') {
+                        VanillaTilt.init(document.querySelectorAll("#productGrid .product-card:not(.js-tilt)"), {
+                            max: 12,
+                            speed: 400,
+                            glare: true,
+                            "max-glare": 0.15,
+                            scale: 1.02
+                        });
+                    }
+
+                    // Reset button state
+                    isLoading = false;
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    isLoading = false;
+                    btn.innerText = 'Try Again';
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                });
+        }
+    </script>
 </main>
 </body>
 </html>

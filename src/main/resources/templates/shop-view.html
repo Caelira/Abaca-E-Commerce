@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<main class="main-container">
+
+    <div style="background: var(--card-bg); border-radius: var(--border-radius); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 40px; border: 1px solid var(--border-color);">
+
+        <div style="height: 120px; background: linear-gradient(135deg, var(--theme-color) 0%, #F5B041 100%); opacity: 0.8;"></div>
+
+        <div style="padding: 20px 40px 40px 40px; display: flex; align-items: flex-end; gap: 30px; margin-top: -60px;">
+            <div style="width: 120px; height: 120px; border-radius: 50%; background: white; border: 4px solid var(--card-bg); box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; position: relative; z-index: 10; overflow: hidden;">
+                <img th:if="${seller.userAccount.userProfile != null}" th:src="@{/account/profile-image/{id}(id=${seller.userAccount.idUser})}" style="width: 100%; height: 100%; object-fit: cover;">
+                <span th:unless="${seller.userAccount.userProfile != null}" style="font-size: 3.5em; font-weight: bold; color: var(--theme-color);" th:text="${#strings.substring(seller.storeName, 0, 1).toUpperCase()}"></span>
+            </div>
+
+            <div style="flex: 1; padding-bottom: 10px;">
+                <h1 style="margin: 0 0 10px 0; color: var(--text-main);" th:text="${seller.storeName}"></h1>
+                <div style="display: flex; gap: 30px; color: var(--text-muted); font-weight: 500;">
+                    <span style="display: flex; align-items: center; gap: 5px;"><span th:text="${#lists.size(products)}"></span> Products</span>
+                    <span style="display: flex; align-items: center; gap: 5px;"><span th:text="${seller.contactNumber != null ? seller.contactNumber : 'Contact unlisted'}"></span></span>
+                    <span style="display: flex; align-items: center; gap: 5px;">Artisan Partner</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="section-title">All Products</h3>
+
+    <div th:if="${#lists.isEmpty(products)}" style="text-align: center; padding: 50px; background: var(--card-bg); border-radius: var(--border-radius);">
+        <h3 class="text-muted">This shop hasn't posted any products yet.</h3>
+    </div>
+
+    <div class="product-grid" id="productGrid" th:if="${!#lists.isEmpty(products)}">
+        <div th:each="product : ${products}" th:remove="tag">
+            <a th:href="@{/products/{id}(id=${product.idProduct})}" class="product-card" data-tilt data-tilt-max="7" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.1">
+                <div class="product-image-container">
+                    <img th:src="@{/products/image/{id}(id=${product.idProduct})}">
+                </div>
+                <div class="product-info">
+                    <h4 class="product-title" th:text="${product.productName}"></h4>
+                    <div class="price-row">
+                        <div>
+                            <span th:if="${product.originalPrice != null}" class="price-original" th:text="'₱' + ${product.originalPrice}"></span>
+                            <span class="price-current" th:text="'₱' + ${product.productPrice}"></span>
+                        </div>
+                        <span class="product-sold" th:text="${product.totalSold} + ' sold'"></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>
