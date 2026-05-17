@@ -3,76 +3,32 @@
 <body>
 <main class="main-container">
 
-    <h2 class="section-title">Explore Materials</h2>
-    <div class="category-flex">
-        <a th:each="category : ${categories}"
-           th:href="@{/category/{id}(id=${category.idCategory})}"
-           class="category-pill"
-           th:text="${category.categoryName}">
+    <h2 class="section-title">Daily Discover</h2>
+
+    <div class="product-grid" id="productGrid">
+        <a th:each="product : ${products}" th:target="_self" th:href="@{/products/{id}(id=${product.idProduct})}" class="product-card" data-tilt>
+            <div class="product-image-container">
+                <img th:src="@{/products/image/{id}(id=${product.idProduct})}">
+            </div>
+            <div class="product-info">
+                <h4 class="product-title" th:text="${product.productName}"></h4>
+                <div class="price-row">
+                    <div>
+                        <span th:if="${product.originalPrice != null}" class="price-original" th:text="'₱' + ${product.originalPrice}"></span>
+                        <span class="price-current" th:text="'₱' + ${product.productPrice}"></span>
+                    </div>
+                    <span class="product-sold" th:text="${product.totalSold} + ' sold'"></span>
+                </div>
+            </div>
         </a>
     </div>
 
-    <h2 class="section-title">Daily Discoveries</h2>
-    <div class="product-grid" id="productGrid">
-        <div th:replace="~{fragments/product-cards :: productGrid}"></div>
-    </div>
-
-    <div style="text-align: center; margin-top: 50px; margin-bottom: 20px;" id="loadMoreContainer">
-        <button id="loadMoreBtn" onclick="loadNextPage()" class="btn-theme" style="width: auto; padding: 15px 50px; border-radius: 50px; font-size: 1.1em; transition: all 0.3s; box-shadow: var(--shadow-sm);">
-            Load More Products
+    <div style="display: flex; justify-content: center; margin: 40px 0 20px 0; width: 100%;">
+        <button id="loadMoreBtn" onclick="loadNextProductBatch()" class="btn-theme" style="width: auto; padding: 12px 60px; font-size: 1.05em; font-weight: bold; border-radius: 30px; box-shadow: var(--shadow-sm);">
+            Load More
         </button>
     </div>
 
-    <script>
-        let currentPage = 0;
-        let isLoading = false;
-
-        function loadNextPage() {
-            if(isLoading) return;
-            isLoading = true;
-            currentPage++;
-
-            const btn = document.getElementById('loadMoreBtn');
-            const originalText = btn.innerText;
-            btn.innerText = 'Loading...';
-            btn.disabled = true;
-            btn.style.opacity = '0.7';
-
-            fetch(`/products/feed?page=${currentPage}`)
-                .then(response => response.text())
-                .then(htmlFragment => {
-                    if(htmlFragment.trim().length < 20) {
-                        document.getElementById('loadMoreContainer').style.display = 'none';
-                        return;
-                    }
-
-                    document.getElementById('productGrid').insertAdjacentHTML('beforeend', htmlFragment);
-
-                    if (typeof VanillaTilt !== 'undefined') {
-                        VanillaTilt.init(document.querySelectorAll("#productGrid .product-card:not(.js-tilt)"), {
-                            max: 12,
-                            speed: 400,
-                            glare: true,
-                            "max-glare": 0.15,
-                            scale: 1.02
-                        });
-                    }
-
-                    // Reset button state
-                    isLoading = false;
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    isLoading = false;
-                    btn.innerText = 'Try Again';
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                });
-        }
-    </script>
 </main>
 </body>
 </html>

@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="productGrid" th:each="product : ${products}" th:remove="tag">
-    <a th:href="@{/products/{id}(id=${product.idProduct})}" class="product-card" data-tilt>
 
+<div th:fragment="productGrid" th:each="product : ${products}" th:remove="tag">
+    <a th:target="_self" th:href="@{/products/{id}(id=${product.idProduct})}" class="product-card" data-tilt>
         <div class="product-image-container">
             <img th:src="@{/products/image/{id}(id=${product.idProduct})}">
         </div>
-
         <div class="product-info">
             <h4 class="product-title" th:text="${product.productName}"></h4>
-
             <div class="price-row">
                 <div>
                     <span th:if="${product.originalPrice != null}" class="price-original" th:text="'₱' + ${product.originalPrice}"></span>
@@ -21,5 +19,6 @@
         </div>
     </a>
 </div>
+
 </body>
 </html>

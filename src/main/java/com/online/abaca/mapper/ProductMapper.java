@@ -12,6 +12,7 @@ public interface ProductMapper {
 
     @Mapping(source = "seller.idSeller", target = "idSeller")
     @Mapping(source = "category.idCategory", target = "idCategory")
+    @Mapping(source = "seller.storeName", target = "storeName")
     ProductResponseDTO toResponseDTO(Product product);
 
     @Mapping(target = "idProduct", ignore = true)

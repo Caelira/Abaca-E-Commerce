@@ -1,6 +1,8 @@
-package com.online.abaca.uicontroller;
+package com.online.abaca.controller;
 
+import com.online.abaca.dto.CategoryResponseDTO;
 import com.online.abaca.repository.CartItemRepository;
+import com.online.abaca.service.CategoryService;
 import com.online.abaca.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -8,11 +10,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.List;
+
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalControllerAdvice {
 
     private final CartItemRepository cartItemRepository;
+    private final CategoryService categoryService; // Inject the service
 
     @ModelAttribute("currentUser")
     public CustomUserDetails getCurrentUser() {
@@ -30,5 +35,10 @@ public class GlobalControllerAdvice {
             return count != null ? count : 0;
         }
         return 0;
+    }
+
+    @ModelAttribute("globalCategories")
+    public List<CategoryResponseDTO> getGlobalCategories() {
+        return categoryService.getAllCategories();
     }
 }
