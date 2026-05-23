@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<!-- buyer prof-->
+<main class="main-container" style="display: flex; gap: 30px;">
+
+    <div style="width: 250px; flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+
+            <img th:if="${currentUser.hasProfileImage()}" th:src="@{/account/profile-image/{id}(id=${currentUser.idUser})}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; box-shadow: var(--shadow-sm);">
+            <div th:unless="${currentUser.hasProfileImage()}" style="width: 50px; height: 50px; border-radius: 50%; background: var(--theme-color); display: flex; align-items: center; justify-content: center; font-size: 1.5em; color: white; font-weight: bold; box-shadow: var(--shadow-sm);" th:text="${#strings.substring(currentUser.fullName != null ? currentUser.fullName : currentUser.username, 0, 1).toUpperCase()}"></div>
+
+            <div>
+                <div style="font-weight: bold; color: var(--text-main);" th:text="${currentUser.fullName != null ? currentUser.fullName : currentUser.username}"></div>
+                <a th:href="@{/account/settings}" style="font-size: 0.85em; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.3s;">✎ Edit Profile</a>
+            </div>
+        </div>
+        <ul style="list-style: none; padding: 0; line-height: 2.5; margin: 0;">
+            <li><a th:href="@{/buyer/profile}" style="text-decoration: none; color: var(--theme-color); font-weight: bold; display: flex; align-items: center; gap: 10px;">My Profile</a></li>
+            <li><a th:href="@{/profile/addresses}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Addresses</a></li>
+            <li><a th:href="@{/buyer/purchases}" style="text-decoration: none; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: color 0.3s;">Purchases</a></li>
+        </ul>
+    </div>
+
+    <div style="flex: 1; background: var(--card-bg); padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
+        <h2 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; color: var(--text-main);">My Profile</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-weight: 500;">Manage your buyer details.</p>
+
+        <div th:if="${param.success}" style="color: #2e7d32; background: #e8f5e9; padding: 15px; margin-bottom: 30px; border-radius: 8px; font-weight: 600;">Profile updated successfully!</div>
+
+        <form th:action="@{/buyer/profile/update}" method="post" style="max-width: 500px;">
+            <div style="display: flex; align-items: center; margin-bottom: 25px;">
+                <div style="width: 150px; color: var(--text-muted); font-weight: 600;">Email</div>
+                <div style="flex: 1; font-weight: bold; color: var(--text-main);" th:text="${currentUser.username}"></div>
+            </div>
+
+            <div style="display: flex; align-items: center; margin-bottom: 30px;">
+                <div style="width: 150px; color: var(--text-muted); font-weight: 600;">Phone Number</div>
+                <div style="flex: 1;">
+                    <input type="text" name="contactNumber" th:value="${buyer.contactNumber}" class="form-control" required>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center;">
+                <div style="width: 150px;"></div>
+                <div style="flex: 1;">
+                    <button type="submit" class="btn-theme" style="width: auto; padding: 12px 40px;">Save Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

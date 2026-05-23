@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+<!-- add address-->
+<main class="main-container" style="display: flex; justify-content: center;">
+
+    <div style="background: var(--card-bg); width: 100%; max-width: 500px; padding: 40px; border-radius: var(--border-radius); box-shadow: var(--shadow-md);">
+
+        <h2 th:text="${address.idAddress == null ? 'Add New Address' : 'Edit Address'}" style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px;"></h2>
+
+        <form th:action="@{/profile/addresses/save}" th:object="${address}" method="post">
+            <input type="hidden" th:field="*{idAddress}" />
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Address Label (e.g., Home, Office)</label>
+                <input type="text" th:field="*{addressType}" class="form-control" placeholder="Home" required />
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Street / Building / House No.</label>
+                <input type="text" th:field="*{street}" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Barangay</label>
+                <input type="text" th:field="*{brgy}" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Municipality / City</label>
+                <input type="text" th:field="*{municipality}" class="form-control" required />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted);">Province</label>
+                <input type="text" th:field="*{province}" class="form-control" required />
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 15px;">
+                <a th:href="@{/profile/addresses}" style="padding: 12px 30px; text-decoration: none; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-muted); font-weight: bold; transition: background 0.3s;">Cancel</a>
+                <button type="submit" class="btn-theme" style="width: auto; padding: 12px 40px;">Save Address</button>
+            </div>
+        </form>
+    </div>
+
+</main>
+</body>
+</html>th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${address.idAddress == null ? 'Add Address' : 'Edit Address'}">Address Form</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <h2 th:text="${address.idAddress == null ? 'Add New Address' : 'Edit Address'}">Address Form</h2>
+
+    <div style="width: 400px; border: 1px solid black; padding: 20px;">
+        <form th:action="@{/profile/addresses/save}" th:object="${address}" method="post">
+
+            <input type="hidden" th:field="*{idAddress}" />
+
+            <div style="margin-bottom: 15px;">
+                <label>Address Type (e.g., Home, Office):</label><br>
+                <input type="text" th:field="*{addressType}" required style="width: 100%;" />
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Street/Building/House No.:</label><br>
+                <input type="text" th:field="*{street}" required style="width: 100%;" />
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Barangay:</label><br>
+                <input type="text" th:field="*{brgy}" required style="width: 100%;" />
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Municipality/City:</label><br>
+                <input type="text" th:field="*{municipality}" required style="width: 100%;" />
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label>Province:</label><br>
+                <input type="text" th:field="*{province}" required style="width: 100%;" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between;">
+                <a th:href="@{/profile/addresses}" style="padding: 5px 10px; text-decoration: none; border: 1px solid black; color: black;">Cancel</a>
+                <button type="submit" style="padding: 5px 15px;">Save Address</button>
+            </div>
+        </form>
+    </div>
+
+</main>
+</body>
+</html>
