@@ -1,4 +1,5 @@
 package com.online.abaca.service;
+
 import com.online.abaca.dto.ProductRequestDTO;
 import com.online.abaca.dto.ProductResponseDTO;
 import com.online.abaca.mapper.ProductMapper;
@@ -8,10 +9,9 @@ import com.online.abaca.model.Seller;
 import com.online.abaca.repository.CategoryRepository;
 import com.online.abaca.repository.ProductRepository;
 import com.online.abaca.repository.SellerRepository;
+import com.online.abaca.repository.CartItemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,22 +30,25 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final SellerRepository sellerRepository;
     private final CategoryRepository categoryRepository;
+    private final CartItemRepository cartItemRepository;
     private final ProductMapper productMapper;
 
     @Override
     @Transactional(readOnly = true)
     public Page<ProductResponseDTO> getProductsByCategory(Long idCategory, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findAllByCategory_IdCategoryOrderByCreatedAtDesc(idCategory, pageable)
+        return productRepository.findAllByCategory_IdCategoryAndDeletedFalseOrderByCreatedAtDesc(idCategory, pageable)
                 .map(productMapper::toResponseDTO);
     }
+
     @Override
     @Transactional(readOnly = true)
     public List<ProductResponseDTO> getProductsBySellerId(Long idSeller) {
-        return productRepository.findBySeller_IdSellerOrderByCreatedAtDesc(idSeller).stream()
+        return productRepository.findBySeller_IdSellerAndDeletedFalseOrderByCreatedAtDesc(idSeller).stream()
                 .map(productMapper::toResponseDTO)
                 .toList();
     }
+
     @Override
     @Transactional
     public ProductResponseDTO createProduct(ProductRequestDTO requestDTO) {
@@ -59,6 +62,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setCreatedAt(LocalDateTime.now());
         product.setTotalSold(0);
+        product.setDeleted(false);
 
         Product savedProduct = productRepository.save(product);
         return productMapper.toResponseDTO(savedProduct);
@@ -69,6 +73,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponseDTO getProductById(Long idProduct) {
         Product product = productRepository.findById(idProduct)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + idProduct));
+        if (product.isDeleted()) {
+            throw new EntityNotFoundException("Product has been removed.");
+        }
         return productMapper.toResponseDTO(product);
     }
 
@@ -76,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll().stream()
+                .filter(p -> !p.isDeleted())
                 .map(productMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -87,12 +95,12 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + idProduct));
         if (!existingProduct.getSeller().getIdSeller().equals(requestDTO.getIdSeller())) {
             Seller seller = sellerRepository.findById(requestDTO.getIdSeller())
-                    .orElseThrow(() -> new EntityNotFoundException("Seller not found with id: " + requestDTO.getIdSeller()));
+                    .orElseThrow(() -> new EntityNotFoundException("Seller not found"));
             existingProduct.setSeller(seller);
         }
         if (!existingProduct.getCategory().getIdCategory().equals(requestDTO.getIdCategory())) {
             Category category = categoryRepository.findById(requestDTO.getIdCategory())
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + requestDTO.getIdCategory()));
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
             existingProduct.setCategory(category);
         }
         productMapper.updateEntityFromDTO(requestDTO, existingProduct);
@@ -103,17 +111,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProduct(Long idProduct) {
-        if (!productRepository.existsById(idProduct)) {
-            throw new EntityNotFoundException("Product not found with id: " + idProduct);
-        }
-        productRepository.deleteById(idProduct);
+        Product existingProduct = productRepository.findById(idProduct)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+        cartItemRepository.deleteByProduct_IdProduct(idProduct);
+        existingProduct.setDeleted(true);
+        productRepository.save(existingProduct);
     }
+
     @Override
     @Transactional(readOnly = true)
     public Page<ProductResponseDTO> getDailyDiscoverFeed(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-
-         return productRepository.findAllByOrderByCreatedAtDesc(pageable)
+        return productRepository.findAllByDeletedFalseOrderByCreatedAtDesc(pageable)
                 .map(productMapper::toResponseDTO);
     }
 
@@ -129,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public Page<ProductResponseDTO> searchProducts(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findByProductNameContainingIgnoreCaseOrderByCreatedAtDesc(keyword, pageable)
+        return productRepository.findByProductNameContainingIgnoreCaseAndDeletedFalseOrderByCreatedAtDesc(keyword, pageable)
                 .map(productMapper::toResponseDTO);
     }
 
@@ -170,7 +179,9 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalStateException("You do not have permission to delete this product.");
         }
 
-        productRepository.delete(existingProduct);
-    }
+        cartItemRepository.deleteByProduct_IdProduct(idProduct);
 
+        existingProduct.setDeleted(true);
+        productRepository.save(existingProduct);
+    }
 }

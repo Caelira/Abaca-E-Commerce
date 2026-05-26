@@ -431,3 +431,47 @@ body {
     background: var(--theme-color);
     border-left: 6px solid #e55a2c;
 }
+/* --- ADDRESS SELECTION & POPUP MODALS --- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(20, 18, 23, 0.6);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    box-sizing: border-box;
+}
+
+.modal form .form-control {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    outline: none;
+    background: var(--body-bg);
+    color: var(--text-main);
+    font-family: inherit;
+}
+
+.modal form .form-control:focus {
+    border-color: var(--theme-color);
+}
+.cart-icon {
+    position: relative;
+    color: var(--text-main);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.cart-icon:hover {
+    color: var(--theme-color);
+}

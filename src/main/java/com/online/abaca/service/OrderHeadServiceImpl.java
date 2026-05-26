@@ -56,7 +56,7 @@ public class OrderHeadServiceImpl implements OrderHeadService {
         if (destinationMunicipality == null) {
             return new BigDecimal("150.00"); // default fare
             }
-
+        //LEGACY
         return switch (destinationMunicipality.trim().toUpperCase()) {
             case "DARAGA" -> new BigDecimal("50.00"); // Base rate
             case "LEGAZPI CITY", "LEGAZPI", "CAMALIG" -> new BigDecimal("80.00"); // pag tabi lang

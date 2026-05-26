@@ -39,7 +39,10 @@ public class Product {
     private LocalDateTime createdAt;
 
     @Column(name = "total_sold", nullable = false)
-    private Integer totalSold = 0;
+    private Integer totalSold;
+
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private boolean deleted = false;
 
     @Lob
     @Column(name = "product_image")

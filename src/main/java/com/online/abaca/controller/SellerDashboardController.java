@@ -25,7 +25,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/seller")
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class SellerDashboardController {
 
     private final ProductService productService;
@@ -33,12 +32,13 @@ public class SellerDashboardController {
     private final SellerRepository sellerRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderHeadRepository orderHeadRepository;
+
     private Seller getCurrentSeller(CustomUserDetails user) {
         return sellerRepository.findByUserAccount_IdUser(user.getIdUser())
                 .orElseThrow(() -> new RuntimeException("Seller profile not found"));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         Seller seller = sellerRepository.findByUserAccount_IdUser(user.getIdUser()).orElse(null);
@@ -46,10 +46,10 @@ public class SellerDashboardController {
             return "redirect:/start-selling";
         }
 
-        List<OrderItem> items = orderItemRepository.findByProduct_Seller_IdSellerOrderByOrderHead_OrderDateDesc(seller.getIdSeller());
+        List<OrderItem> items = orderItemRepository.findByProduct_Seller_IdSellerWithOrderHeadDetails(seller.getIdSeller());
 
         BigDecimal totalSales = items.stream()
-                .filter(item -> "COMPLETED".equals(item.getOrderHead().getOrderStatus()))
+                .filter(item -> item.getOrderHead() != null && "PENDING".equalsIgnoreCase(item.getOrderHead().getOrderStatus()))
                 .map(item -> item.getFinalUnitPrice().multiply(new java.math.BigDecimal(item.getOrderQuantity())))
                 .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
 
@@ -61,6 +61,7 @@ public class SellerDashboardController {
         return "seller-dashboard";
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/products")
     public String products(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         Seller seller = getCurrentSeller(user);
@@ -75,6 +76,7 @@ public class SellerDashboardController {
     }
 
     @PostMapping("/products/add")
+    @Transactional
     public String processAddProduct(
             @RequestParam("productName") String productName,
             @RequestParam("productPrice") BigDecimal productPrice,
@@ -107,21 +109,25 @@ public class SellerDashboardController {
         }
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/orders")
     public String orders(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         Seller seller = getCurrentSeller(user);
-        List<OrderItem> orderedItems = orderItemRepository.findByProduct_Seller_IdSellerOrderByOrderHead_OrderDateDesc(seller.getIdSeller());
+        List<OrderItem> orderedItems = orderItemRepository.findByProduct_Seller_IdSellerWithOrderHeadDetails(seller.getIdSeller());
         model.addAttribute("orderedItems", orderedItems);
         return "seller-orders";
     }
+
     @PostMapping("/orders/ship")
+    @Transactional
     public String shipOrder(@RequestParam("orderId") Long orderId) {
         OrderHead order = orderHeadRepository.findById(orderId).orElseThrow();
         order.setOrderStatus("SHIPPED");
         orderHeadRepository.save(order);
-
         return "redirect:/seller/orders?shipped=true";
     }
+
+    @Transactional(readOnly = true)
     @GetMapping("/products/edit/{id}")
     public String showEditProduct(@PathVariable("id") Long idProduct, @AuthenticationPrincipal CustomUserDetails user, Model model) {
         Seller seller = getCurrentSeller(user);
@@ -135,6 +141,7 @@ public class SellerDashboardController {
     }
 
     @PostMapping("/products/edit/{id}")
+    @Transactional
     public String processEditProduct(
             @PathVariable("id") Long idProduct,
             @ModelAttribute ProductRequestDTO requestDTO,
@@ -149,13 +156,15 @@ public class SellerDashboardController {
         }
     }
 
-    // Delete
     @PostMapping("/products/delete")
+    @Transactional
     public String deleteProduct(@RequestParam("productId") Long productId, @AuthenticationPrincipal CustomUserDetails user) {
         Seller seller = getCurrentSeller(user);
         productService.deleteProduct(productId, seller.getIdSeller());
         return "redirect:/seller/products?deleted=true";
     }
+
+    @Transactional(readOnly = true)
     @GetMapping("/profile")
     public String viewProfile(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         Seller seller = getCurrentSeller(user);
@@ -164,6 +173,7 @@ public class SellerDashboardController {
     }
 
     @PostMapping("/profile/update")
+    @Transactional
     public String updateProfile(@RequestParam("storeName") String storeName, @RequestParam("contactNumber") String contactNumber, @AuthenticationPrincipal CustomUserDetails user) {
         Seller seller = getCurrentSeller(user);
         seller.setStoreName(storeName);

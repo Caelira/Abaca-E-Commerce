@@ -84,7 +84,7 @@
 
             <div style="border-top: 1px dashed var(--border-color); padding-top: 25px; display: flex; justify-content: flex-end;">
                 <form th:action="@{/checkout/process}" method="post">
-                    <input type="hidden" name="addressId" th:if="${!#lists.isEmpty(addresses)}" th:value="${selectedAddress.idAddress}">
+                    <input type="hidden" name="addressId" th:if="${!#lists.isEmpty(addresses) and selectedAddress != null}" th:value="${selectedAddress.idAddress}">
                     <input type="hidden" name="paymentMethod" value="COD">
                     <button type="submit" th:disabled="${#lists.isEmpty(addresses)}" class="btn-theme" th:style="${#lists.isEmpty(addresses) ? 'background: #ccc; cursor: not-allowed; width: auto; padding: 15px 50px;' : 'width: auto; padding: 15px 50px; font-size: 1.1em;'}">
                         Place Order

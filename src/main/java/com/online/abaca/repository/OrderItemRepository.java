@@ -22,4 +22,11 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             "WHERE p.seller.idSeller = :idSeller " +
             "ORDER BY oh.orderDate DESC")
     List<OrderItem> findByProduct_Seller_IdSellerOrderByOrderHead_OrderDateDesc(@Param("idSeller") Long idSeller);
+
+    @Query("SELECT oi FROM OrderItem oi " +
+            "JOIN FETCH oi.product p " +
+            "JOIN FETCH oi.orderHead oh " +
+            "WHERE p.seller.idSeller = :idSeller " +
+            "ORDER BY oh.orderDate DESC")
+    List<OrderItem> findByProduct_Seller_IdSellerWithOrderHeadDetails(@Param("idSeller") Long idSeller);
 }

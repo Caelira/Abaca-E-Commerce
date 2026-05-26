@@ -180,8 +180,7 @@
       document.getElementById('formIdAddress').value = id;
       document.getElementById('streetInput').value = street;
 
-      // Optional override so form comes back to this page instead of checkout
-      document.getElementById('addressForm').action = "/checkout/save-address?redirect=/account/addresses";
+       document.getElementById('addressForm').action = "/checkout/save-address?redirect=/account/addresses";
 
       if (!provincesLoaded) await loadProvinces();
 

@@ -17,6 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 @Controller
 @RequestMapping("/account")
 @RequiredArgsConstructor
@@ -25,6 +28,10 @@ public class AccountController {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AddressService addressService;
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[0-9\\W]).{8,}$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^09\\d{9}$");
 
     @GetMapping("/settings")
     public String accountSettings(@AuthenticationPrincipal CustomUserDetails user, Model model) {
@@ -48,6 +55,23 @@ public class AccountController {
             @AuthenticationPrincipal CustomUserDetails user) {
 
         try {
+            if (fullName == null || fullName.trim().isEmpty()) {
+                return "redirect:/account/settings?error=Full+name+cannot+be+blank.";
+            }
+
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                return "redirect:/account/settings?error=Please+enter+a+valid+email+address.";
+            }
+
+            if (phoneNumber != null && !phoneNumber.trim().isEmpty() && !PHONE_PATTERN.matcher(phoneNumber.trim()).matches()) {
+                return "redirect:/account/settings?error=Phone+number+must+be+exactly+11+digits+and+start+with+09.";
+            }
+
+            Optional<UserAccount> duplicateCheck = userAccountRepository.findByEmail(email);
+            if (duplicateCheck.isPresent() && !duplicateCheck.get().getIdUser().equals(user.getIdUser())) {
+                return "redirect:/account/settings?error=Email+address+is+already+taken+by+another+account.";
+            }
+
             UserAccount account = userAccountRepository.findById(user.getIdUser()).orElseThrow();
             account.setFullName(fullName);
             account.setEmail(email);
@@ -68,7 +92,7 @@ public class AccountController {
 
             return "redirect:/account/settings?profileSuccess=true";
         } catch (Exception e) {
-            return "redirect:/account/settings?error=true";
+            return "redirect:/account/settings?error=An+unexpected+error+occurred+while+saving+profile.";
         }
     }
 
@@ -76,6 +100,10 @@ public class AccountController {
     public String updatePassword(
             @RequestParam("newPassword") String newPassword,
             @AuthenticationPrincipal CustomUserDetails user) {
+
+        if (!PASSWORD_PATTERN.matcher(newPassword).matches()) {
+            return "redirect:/account/settings?error=Password+must+be+at+least+8+characters+long+and+contain+at+least+one+number+or+special+character.";
+        }
 
         UserAccount account = userAccountRepository.findById(user.getIdUser()).orElseThrow();
         account.setPassword(passwordEncoder.encode(newPassword));
