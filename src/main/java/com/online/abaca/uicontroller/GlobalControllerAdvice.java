@@ -17,7 +17,7 @@ import java.util.List;
 public class GlobalControllerAdvice {
 
     private final CartItemRepository cartItemRepository;
-    private final CategoryService categoryService; // Inject the service
+    private final CategoryService categoryService;
 
     @ModelAttribute("currentUser")
     public CustomUserDetails getCurrentUser() {

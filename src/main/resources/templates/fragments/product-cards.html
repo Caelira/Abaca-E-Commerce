@@ -11,6 +11,7 @@
             <h4 class="product-title" th:text="${product.productName}"></h4>
             <div class="price-row">
                 <div>
+                    <!-- price -->
                     <span th:if="${product.originalPrice != null}" class="price-original" th:text="'₱' + ${product.originalPrice}"></span>
                     <span class="price-current" th:text="'₱' + ${product.productPrice}"></span>
                 </div>
