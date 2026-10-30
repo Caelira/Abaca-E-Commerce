@@ -9,7 +9,6 @@ Abaca E-Commerce is a web application written with Java and Spring Boot. Anyone 
 ## Why It Was Built
 
 - **Purpose:** to connect local abaca artisans in Albay with potential buyers.
-- **Technical goal:** to demonstrate database design, structural integrity through normalization, and practical data manipulation with SQL operations.
 
 ## What It Does
 
