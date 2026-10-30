@@ -1,19 +1,29 @@
-# Abaca E-Commerce
+# Abaka Naman (Abaca E-Commerce)
 
-A multi-vendor online marketplace where buyers shop from many independent sellers in one place.
+A localized e-commerce platform that connects the abaca artisans of Albay with buyers.
 
 ## About
 
-Abaca E-Commerce is a full-stack web application built with Java and Spring Boot. Anyone can browse and search products. Registered buyers can fill a cart, save delivery addresses and check out. Registered sellers get their own shop, a dashboard, and tools to manage products and orders.
+Abaka Naman started as a final database project: 11 relational tables, originally designed in phpMyAdmin, built around three core entities: **users** (buyers and sellers), **products** and **transactions**. The main user account table is split from the buyer and seller profiles. This normalization removes redundant data and avoids null values.
 
-## Why I Built This
+This repository is the web application built on that design, written with Java and Spring Boot. Anyone can browse and search products. Registered buyers can fill a cart, save addresses and check out. Registered sellers get their own shop, a dashboard, and tools to manage products and orders.
 
-I built Abaca to learn how a real online marketplace works end to end: user accounts and roles, a relational data model, a cart-to-order flow, and a server-rendered front end. It is also a base for a platform that lets small sellers set up a shop without building their own website.
+## Why It Was Built
+
+- **Purpose:** to connect local abaca artisans in Albay with potential buyers.
+- **Technical goal:** to demonstrate database design, structural integrity through normalization, and practical data manipulation with SQL operations.
+
+## What It Does
+
+- **Product search and filtering:** buyers query products by category, price range and search terms.
+- **Order processing and inventory:** checkout runs as a transaction (inserts and updates) that creates the order and automatically deducts the purchased quantity from product stock.
+- **Sales analytics:** aggregate functions (order counts, units sold, price statistics) grouped by product ID produce performance reports for platform administrators.
+- **Database maintenance:** logical delete queries clean up corrupted or abandoned shopping carts to keep the database lean and structured.
 
 ## Features
 
 **For buyers**
-- Browse products by category, view shop pages, and search
+- Browse by category, view shop pages, search products
 - Product detail pages with images
 - Shopping cart and checkout
 - Profile, saved addresses, purchase history and order details
