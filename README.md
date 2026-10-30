@@ -1,12 +1,10 @@
-# Abaka Naman (Abaca E-Commerce)
+# Abaca E-Commerce
 
 A localized e-commerce platform that connects the abaca artisans of Albay with buyers.
 
 ## About
 
-Abaka Naman started as a final database project: 11 relational tables, originally designed in phpMyAdmin, built around three core entities: **users** (buyers and sellers), **products** and **transactions**. The main user account table is split from the buyer and seller profiles. This normalization removes redundant data and avoids null values.
-
-This repository is the web application built on that design, written with Java and Spring Boot. Anyone can browse and search products. Registered buyers can fill a cart, save addresses and check out. Registered sellers get their own shop, a dashboard, and tools to manage products and orders.
+Abaca E-Commerce is a web application written with Java and Spring Boot. Anyone can browse and search products. Registered buyers can fill a cart, save addresses and check out. Registered sellers get their own shop, a dashboard, and tools to manage products and orders.
 
 ## Why It Was Built
 
